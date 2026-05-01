@@ -129,6 +129,52 @@ body::before {
   white-space: nowrap;
 }
 
+.hero-links {
+  display: inline-flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.github-link,
+.license-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  min-height: 24px;
+  padding: 0 8px;
+  border: 1px solid color-mix(in oklch, var(--line) 80%, white);
+  border-radius: 999px;
+  background: color-mix(in oklch, var(--panel-strong) 92%, white);
+  color: var(--text);
+  font-size: 11px;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.github-link:hover,
+.github-link:focus-visible {
+  border-color: color-mix(in oklch, var(--accent) 55%, white);
+  color: var(--accent-strong);
+  outline: none;
+}
+
+.github-icon {
+  width: 14px;
+  height: 14px;
+  fill: currentColor;
+}
+
+.mit-license-icon {
+  width: 14px;
+  height: 14px;
+  flex-shrink: 0;
+}
+
+.license-badge {
+  color: var(--muted);
+}
+
 .board {
   display: grid;
   grid-template-columns: repeat(12, minmax(0, 1fr));
@@ -1209,6 +1255,23 @@ details.panel summary {
   <main class="shell">
     <header class="hero">
       <h1>最优化合成路线计算器 <span class="hero-author">by W1N9</span></h1>
+      <div class="hero-links" aria-label="项目链接">
+        <a class="github-link" href="https://github.com/DZzuk1ll/pss-prestige-optimizer" target="_blank" rel="noopener noreferrer" title="前往 GitHub 问题反馈">
+          <svg class="github-icon" viewBox="0 0 16 16" aria-hidden="true">
+            <path d="M8 0C3.58 0 0 3.67 0 8.2c0 3.62 2.29 6.69 5.47 7.77.4.08.55-.18.55-.39 0-.19-.01-.84-.01-1.53-2.01.38-2.53-.5-2.69-.96-.09-.23-.48-.96-.82-1.16-.28-.15-.68-.52-.01-.53.63-.01 1.08.59 1.23.83.72 1.24 1.87.89 2.33.68.07-.53.28-.89.51-1.09-1.78-.21-3.64-.91-3.64-4.04 0-.89.31-1.62.82-2.19-.08-.21-.36-1.04.08-2.16 0 0 .67-.22 2.2.84A7.44 7.44 0 0 1 8 3.73c.68 0 1.36.09 2 .27 1.53-1.06 2.2-.84 2.2-.84.44 1.12.16 1.95.08 2.16.51.57.82 1.3.82 2.19 0 3.14-1.87 3.83-3.65 4.04.29.26.54.75.54 1.52 0 1.09-.01 1.97-.01 2.24 0 .21.15.47.55.39A8.08 8.08 0 0 0 16 8.2C16 3.67 12.42 0 8 0z"/>
+          </svg>
+          <span>问题反馈</span>
+        </a>
+        <span class="license-badge" title="MIT License（开源许可证）">
+          <svg class="mit-license-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+            <polyline points="14 2 14 8 20 8"/>
+            <line x1="16" y1="13" x2="8" y2="13"/>
+            <line x1="16" y1="17" x2="8" y2="17"/>
+          </svg>
+          <span>MIT License</span>
+        </span>
+      </div>
       <div class="hero-stats">
         <span class="stat">仓库 <strong id="hero-inventory">0/0</strong></span>
         <span class="stat">计划 <strong id="hero-plans">0</strong></span>
@@ -1309,6 +1372,7 @@ details.panel summary {
                 <option value="60">快速 60</option>
                 <option value="120">均衡 120</option>
                 <option value="300">增强 300</option>
+                <option value="0">不限</option>
               </select>
             </label>
           </div>
@@ -2361,8 +2425,8 @@ function summarizeTargetResults(targets, targetCounts) {
       priority: target.priority,
       desiredCount: desired,
       produced,
-      shortage: desired > 0 ? Math.max(0, desired - produced) : 0,
-      satisfied: desired <= 0 || produced >= desired
+      shortage: desired > 0 ? Math.abs(desired - produced) : 0,
+      satisfied: desired <= 0 || produced === desired
     };
   });
 }
@@ -2492,6 +2556,7 @@ function buildTargetRoutePool(target, inventory, options = {}) {
   const targetId = String(target.targetId || target);
   const baseInventory = cleanWarehouseInventory ? cleanWarehouseInventory(inventory) : cloneInventory(inventory);
   const beamWidth = normalizeBeamWidth(options.beamWidth);
+  const unlimitedBeam = isUnlimitedBeamWidth(beamWidth);
   const stats = options.stats || null;
   const cacheKey = getRoutePoolCacheKey(targetId, baseInventory, beamWidth);
   const cachedPool = readRoutePoolCache(cacheKey);
@@ -2510,10 +2575,10 @@ function buildTargetRoutePool(target, inventory, options = {}) {
   if (stats) {
     stats.routePoolCacheMisses += 1;
   }
-  const perCountLimit = options.perCountLimit || (beamWidth >= 300 ? 24 : beamWidth >= 120 ? 12 : 6);
-  const routeLimit = options.routeLimit || (beamWidth >= 300 ? 6 : 4);
-  const recipeLimit = options.recipeLimit || (beamWidth >= 300 ? 24 : 12);
-  const branchFanout = options.branchFanout || (beamWidth >= 300 ? 2 : 1);
+  const perCountLimit = options.perCountLimit || (unlimitedBeam ? Number.POSITIVE_INFINITY : beamWidth >= 300 ? 24 : beamWidth >= 120 ? 12 : 6);
+  const routeLimit = options.routeLimit || (unlimitedBeam ? 12 : beamWidth >= 300 ? 6 : 4);
+  const recipeLimit = options.recipeLimit || (unlimitedBeam ? 48 : beamWidth >= 300 ? 24 : 12);
+  const branchFanout = options.branchFanout || (unlimitedBeam ? 3 : beamWidth >= 300 ? 2 : 1);
   const deadline = options.deadline || Infinity;
   const recipeGraph = buildSelectedTargetClosure([targetId]);
   const routesByCount = {};
@@ -2575,11 +2640,11 @@ function buildTargetRoutePool(target, inventory, options = {}) {
         seen.add(key);
         return true;
       })
-      .slice(0, perCountLimit * 2);
+      .slice(0, Number.isFinite(perCountLimit) ? perCountLimit * 2 : undefined);
 
     const routeCandidates = nextBeamStates.map((state) => createRouteCandidate(targetId, nextCount, state, baseInventory));
     routesByCount[nextCount] = pruneRouteCandidates(routeCandidates, perCountLimit);
-    beam = nextBeamStates.slice(0, perCountLimit);
+    beam = Number.isFinite(perCountLimit) ? nextBeamStates.slice(0, perCountLimit) : nextBeamStates;
   }
 
   if (performance.now() >= deadline) {
@@ -2614,9 +2679,8 @@ function scoreRouteCombination(candidate, targets, mode) {
     const desired = normalizeQuantity(target.desiredCount);
     const priorityWeight = Math.max(1, maxPriority - Math.max(1, normalizeQuantity(target.priority) || 1) + 1);
     if (mode === 'guarantee' && desired > 0) {
-      score += Math.min(count, desired) * 90000 * priorityWeight;
-      score -= Math.max(0, desired - count) * 15000 * priorityWeight;
-      score += Math.max(0, count - desired) * 800 * priorityWeight;
+      score += count === desired ? 120000 * priorityWeight : 0;
+      score -= Math.abs(desired - count) * 30000 * priorityWeight;
     } else {
       score += count * 1200 * priorityWeight;
     }
@@ -2642,9 +2706,11 @@ function optimizeRoutePools(routePools, targets, inventory, options = {}) {
 
   targets.forEach((target) => {
     const pool = routePools.find((item) => item.targetId === target.targetId);
+    const desired = normalizeQuantity(target.desiredCount);
+    const poolRoutes = (pool?.routes || []).slice().sort((left, right) => right.count - left.count || left.cost - right.cost);
     const routeOptions = [
       { targetId: target.targetId, count: 0, demand: {}, recipeCounts: {}, stageGroups: [], recipeEntries: [], cost: 0 },
-      ...((pool?.routes || []).slice().sort((left, right) => right.count - left.count || left.cost - right.cost))
+      ...(desired > 0 ? poolRoutes.filter((route) => route.count === desired) : poolRoutes)
     ];
     const expanded = [];
     beam.forEach((state) => {
@@ -2683,7 +2749,7 @@ function optimizeRoutePools(routePools, targets, inventory, options = {}) {
         seen.add(key);
         return true;
       })
-      .slice(0, beamWidth);
+      .slice(0, beamWidth === 0 ? undefined : beamWidth);
   });
 
   return {
@@ -2700,7 +2766,8 @@ function optimizeSevenStarTargets(rawTargets, inventory, options = {}) {
   const beamWidth = normalizeBeamWidth(options.beamWidth);
   const mode = options.mode === 'maximize' ? 'maximize' : 'guarantee';
   const targetBudgetFactor = Math.min(3, Math.max(1, Math.sqrt(Math.max(1, targets.length))));
-  const maxMs = options.maxMs || Math.round((beamWidth >= 300 ? 7500 : 4500) * targetBudgetFactor);
+  const unlimitedBeam = isUnlimitedBeamWidth(beamWidth);
+  const maxMs = options.maxMs || (unlimitedBeam ? 300000 : Math.round((beamWidth >= 300 ? 7500 : 4500) * targetBudgetFactor));
   const baseInventory = cleanWarehouseInventory ? cleanWarehouseInventory(inventory) : cloneInventory(inventory);
   const deadline = startedAt + maxMs;
   const searchStats = createSearchStats();
@@ -2887,8 +2954,24 @@ requestPersistentStorage();
 hydrateFromIdbIfNeeded();
 
 function normalizeBeamWidth(value) {
+  if (value === 'unlimited' || String(value) === '0') {
+    return 0;
+  }
   const width = normalizeQuantity(value);
   return [60, 120, 300].includes(width) ? width : 120;
+}
+
+function isUnlimitedBeamWidth(value) {
+  return normalizeBeamWidth(value) === 0;
+}
+
+function formatBeamWidth(value) {
+  return isUnlimitedBeamWidth(value) ? '不限' : String(normalizeBeamWidth(value));
+}
+
+function limitByBeam(list, beamWidth) {
+  const width = normalizeBeamWidth(beamWidth);
+  return width === 0 ? list : list.slice(0, width);
 }
 
 function normalizeWarehouseStar(value) {
@@ -3652,7 +3735,7 @@ function runPlanner() {
   els.plannerRun.textContent = '搜索中...';
   const targetCount = enabledTargets.length;
   const width = normalizeBeamWidth(state.optimizerBeamWidth);
-  setPlannerStatus(`正在搜索 ${targetCount} 个七星目标，搜索宽度 ${width}。目标多或宽度高时可能需要几十秒，请保持页面打开。`, 'busy');
+  setPlannerStatus(`正在搜索 ${targetCount} 个七星目标，搜索宽度 ${formatBeamWidth(width)}。不限模式最多运行 5 分钟。`, 'busy');
 
   const startSearch = () => {
     try {
@@ -3691,10 +3774,10 @@ function renderPlannerResult() {
     els.plannerMetrics.innerHTML = `
       ${renderMetricCard('规划状态', '等待', '添加七星目标后开始')}
       ${renderMetricCard('优化模式', state.optimizationMode === 'guarantee' ? '期望优先' : '最大数量', '可随时切换')}
-      ${renderMetricCard('搜索宽度', `${state.optimizerBeamWidth}`, '越高越慢')}
+      ${renderMetricCard('搜索宽度', formatBeamWidth(state.optimizerBeamWidth), isUnlimitedBeamWidth(state.optimizerBeamWidth) ? '最多 5 分钟' : '越高越慢')}
       ${renderMetricCard('目标数量', `${state.optimizationTargets.filter((target) => target.enabled).length}`, '已启用目标')}
     `;
-    els.plannerSummary.innerHTML = '<div class="approx-note">该规划器使用有界搜索生成近似最优方案；已加入路线池缓存、稀缺度评分和上界剪枝。搜索宽度越高越接近全局最优，但计算更慢。</div>';
+    els.plannerSummary.innerHTML = '<div class="approx-note">该规划器使用路线池组合生成近似最优方案；期望数量是精确值，填 1 就只选择正好 1 个。不限定宽度会取消宽度裁剪，但最多运行 5 分钟。</div>';
     els.plannerStages.innerHTML = '<div class="empty-state">这里会显示按阶段整理的七星合成路线。</div>';
     return;
   }
@@ -3706,7 +3789,7 @@ function renderPlannerResult() {
   const cacheTotal = normalizeQuantity(searchStats.routePoolCacheHits) + normalizeQuantity(searchStats.routePoolCacheMisses);
   els.plannerMetrics.innerHTML = `
     ${renderMetricCard('近似产量', `${analysis.totalProduced}`, '七星目标总数')}
-    ${renderMetricCard('期望满足', `${satisfiedCount}/${analysis.targetResults.length}`, missingTargets.length ? `${missingTargets.length} 个有缺口` : '全部满足')}
+    ${renderMetricCard('期望匹配', `${satisfiedCount}/${analysis.targetResults.length}`, missingTargets.length ? `${missingTargets.length} 个不匹配` : '全部匹配')}
     ${renderMetricCard('配方范围', `${analysis.closureRecipeCount || 0}`, `${analysis.closureCrewCount || 0} 名相关船员`)}
     ${renderMetricCard('搜索状态', analysis.truncated ? '已截断' : '完成', `${analysis.elapsedMs}ms · 缓存 ${normalizeQuantity(searchStats.routePoolCacheHits)}/${cacheTotal || 0}`)}
   `;
@@ -3716,7 +3799,7 @@ function renderPlannerResult() {
       <div class="summary-grid">
         <section class="summary-cell wide">
           <span class="summary-label">近似最优提示</span>
-          <strong>该方案先完整构建所选目标的配方闭包并集，再在该子图内进行有界搜索；结果属于近似最优，搜索宽度越高越接近全局最优。</strong>
+          <strong>该方案先完整构建所选目标的配方闭包并集，再在路线池内组合搜索；期望数量按精确值处理，“不限”会取消宽度裁剪，但最多运行 5 分钟。</strong>
         </section>
         <section class="summary-cell wide">
           <span class="summary-label">本次配方范围</span>
@@ -3745,7 +3828,7 @@ function renderPlannerResult() {
         <section class="summary-cell wide">
           <span class="summary-label">目标分配</span>
           <div class="chip-wrap">
-            ${analysis.targetResults.map((target) => `<span class="info-chip">${escapeHtml(target.name)} x${target.produced}${target.desiredCount ? ` / 期望 ${target.desiredCount}` : ''}${target.shortage ? ` / 缺 ${target.shortage}` : ''}</span>`).join('')}
+            ${analysis.targetResults.map((target) => `<span class="info-chip">${escapeHtml(target.name)} x${target.produced}${target.desiredCount ? ` / 精确 ${target.desiredCount}` : ''}${target.shortage ? ' / 不匹配' : ''}</span>`).join('')}
           </div>
         </section>
         <section class="summary-cell wide">
