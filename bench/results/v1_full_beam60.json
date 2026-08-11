@@ -1,0 +1,348 @@
+{
+ "truncated": false,
+ "exploredStates": 7525,
+ "totalProduced": 19,
+ "targetResults": [
+  {
+   "targetId": "110",
+   "name": "白银剑圣",
+   "priority": 1,
+   "desiredCount": 1,
+   "produced": 1,
+   "shortage": 0,
+   "satisfied": true
+  },
+  {
+   "targetId": "114",
+   "name": "建筑工程车",
+   "priority": 2,
+   "desiredCount": 1,
+   "produced": 1,
+   "shortage": 0,
+   "satisfied": true
+  },
+  {
+   "targetId": "115",
+   "name": "布伦达教授",
+   "priority": 3,
+   "desiredCount": 0,
+   "produced": 5,
+   "shortage": 0,
+   "satisfied": true
+  },
+  {
+   "targetId": "116",
+   "name": "残奥会之神",
+   "priority": 4,
+   "desiredCount": 0,
+   "produced": 7,
+   "shortage": 0,
+   "satisfied": true
+  },
+  {
+   "targetId": "125",
+   "name": "收割者",
+   "priority": 5,
+   "desiredCount": 0,
+   "produced": 2,
+   "shortage": 0,
+   "satisfied": true
+  },
+  {
+   "targetId": "196",
+   "name": "粉红哥斯拉",
+   "priority": 6,
+   "desiredCount": 0,
+   "produced": 3,
+   "shortage": 0,
+   "satisfied": true
+  }
+ ],
+ "recipeCounts": {
+  "21|338->110": 1,
+  "277|187->114": 1,
+  "21|187->115": 1,
+  "21|377->115": 1,
+  "277|377->115": 1,
+  "342|187->115": 1,
+  "342|19->115": 1,
+  "188|518->116": 1,
+  "372|206->116": 1,
+  "373|148->116": 1,
+  "42|206->116": 2,
+  "105|404->423": 1,
+  "372|423->116": 1,
+  "150|68->7": 1,
+  "7|19->116": 1,
+  "152|417->125": 1,
+  "188|148->125": 1,
+  "148|338->196": 1,
+  "148|486->196": 1,
+  "152|152->196": 1
+ },
+ "demand": {
+  "19": 2,
+  "21": 3,
+  "42": 2,
+  "68": 1,
+  "105": 1,
+  "148": 4,
+  "150": 1,
+  "152": 3,
+  "187": 3,
+  "188": 2,
+  "206": 3,
+  "277": 2,
+  "338": 2,
+  "342": 2,
+  "372": 2,
+  "373": 1,
+  "377": 2,
+  "404": 1,
+  "417": 1,
+  "486": 1,
+  "518": 1
+ },
+ "remaining": {
+  "14": 2,
+  "19": 2,
+  "29": 4,
+  "42": 1,
+  "49": 5,
+  "62": 4,
+  "68": 2,
+  "81": 2,
+  "88": 5,
+  "90": 6,
+  "91": 3,
+  "95": 5,
+  "100": 1,
+  "105": 2,
+  "110": 1,
+  "112": 1,
+  "114": 1,
+  "115": 5,
+  "116": 7,
+  "125": 2,
+  "133": 3,
+  "150": 4,
+  "154": 2,
+  "161": 1,
+  "187": 1,
+  "189": 5,
+  "193": 1,
+  "196": 3,
+  "207": 6,
+  "211": 2,
+  "212": 5,
+  "256": 1,
+  "280": 2,
+  "311": 1,
+  "313": 4,
+  "321": 5,
+  "330": 2,
+  "334": 3,
+  "337": 5,
+  "338": 2,
+  "345": 2,
+  "347": 3,
+  "368": 2,
+  "372": 2,
+  "378": 4,
+  "404": 1,
+  "407": 1,
+  "417": 2,
+  "438": 2,
+  "440": 5,
+  "473": 2,
+  "477": 5,
+  "486": 3,
+  "488": 1,
+  "501": 2,
+  "517": 1
+ },
+ "production": {
+  "7": 1,
+  "110": 1,
+  "114": 1,
+  "115": 5,
+  "116": 7,
+  "125": 2,
+  "196": 3,
+  "423": 1
+ },
+ "selectedRoutes": [
+  {
+   "targetId": "110",
+   "targetName": "白银剑圣",
+   "count": 1,
+   "demand": {
+    "21": 1,
+    "338": 1
+   },
+   "recipeCounts": {
+    "21|338->110": 1
+   }
+  },
+  {
+   "targetId": "114",
+   "targetName": "建筑工程车",
+   "count": 1,
+   "demand": {
+    "187": 1,
+    "277": 1
+   },
+   "recipeCounts": {
+    "277|187->114": 1
+   }
+  },
+  {
+   "targetId": "115",
+   "targetName": "布伦达教授",
+   "count": 5,
+   "demand": {
+    "19": 1,
+    "21": 2,
+    "187": 2,
+    "277": 1,
+    "342": 2,
+    "377": 2
+   },
+   "recipeCounts": {
+    "21|187->115": 1,
+    "21|377->115": 1,
+    "277|377->115": 1,
+    "342|187->115": 1,
+    "342|19->115": 1
+   }
+  },
+  {
+   "targetId": "116",
+   "targetName": "残奥会之神",
+   "count": 7,
+   "demand": {
+    "19": 1,
+    "42": 2,
+    "68": 1,
+    "105": 1,
+    "148": 1,
+    "150": 1,
+    "188": 1,
+    "206": 3,
+    "372": 2,
+    "373": 1,
+    "404": 1,
+    "518": 1
+   },
+   "recipeCounts": {
+    "188|518->116": 1,
+    "372|206->116": 1,
+    "373|148->116": 1,
+    "42|206->116": 2,
+    "105|404->423": 1,
+    "372|423->116": 1,
+    "150|68->7": 1,
+    "7|19->116": 1
+   }
+  },
+  {
+   "targetId": "125",
+   "targetName": "收割者",
+   "count": 2,
+   "demand": {
+    "148": 1,
+    "152": 1,
+    "188": 1,
+    "417": 1
+   },
+   "recipeCounts": {
+    "152|417->125": 1,
+    "188|148->125": 1
+   }
+  },
+  {
+   "targetId": "196",
+   "targetName": "粉红哥斯拉",
+   "count": 3,
+   "demand": {
+    "148": 2,
+    "152": 2,
+    "338": 1,
+    "486": 1
+   },
+   "recipeCounts": {
+    "148|338->196": 1,
+    "148|486->196": 1,
+    "152|152->196": 1
+   }
+  }
+ ],
+ "routePools": [
+  {
+   "targetId": "110",
+   "targetName": "白银剑圣",
+   "maxCount": 23,
+   "routeCount": 136,
+   "closureRecipeCount": 5374,
+   "closureCrewCount": 284,
+   "upperBoundPruned": 6,
+   "fromCache": false,
+   "truncated": false
+  },
+  {
+   "targetId": "114",
+   "targetName": "建筑工程车",
+   "maxCount": 36,
+   "routeCount": 214,
+   "closureRecipeCount": 7677,
+   "closureCrewCount": 322,
+   "upperBoundPruned": 0,
+   "fromCache": false,
+   "truncated": false
+  },
+  {
+   "targetId": "115",
+   "targetName": "布伦达教授",
+   "maxCount": 39,
+   "routeCount": 232,
+   "closureRecipeCount": 6418,
+   "closureCrewCount": 307,
+   "upperBoundPruned": 3,
+   "fromCache": false,
+   "truncated": false
+  },
+  {
+   "targetId": "116",
+   "targetName": "残奥会之神",
+   "maxCount": 38,
+   "routeCount": 225,
+   "closureRecipeCount": 6524,
+   "closureCrewCount": 302,
+   "upperBoundPruned": 0,
+   "fromCache": false,
+   "truncated": false
+  },
+  {
+   "targetId": "125",
+   "targetName": "收割者",
+   "maxCount": 35,
+   "routeCount": 206,
+   "closureRecipeCount": 6414,
+   "closureCrewCount": 306,
+   "upperBoundPruned": 4,
+   "fromCache": false,
+   "truncated": false
+  },
+  {
+   "targetId": "196",
+   "targetName": "粉红哥斯拉",
+   "maxCount": 29,
+   "routeCount": 172,
+   "closureRecipeCount": 5932,
+   "closureCrewCount": 294,
+   "upperBoundPruned": 0,
+   "fromCache": false,
+   "truncated": false
+  }
+ ]
+}

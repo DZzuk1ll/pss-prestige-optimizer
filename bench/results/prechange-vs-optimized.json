@@ -1,0 +1,3925 @@
+{
+  "generatedAt": "2026-08-01T15:46:06.399Z",
+  "node": "v25.9.0",
+  "baselineModule": "/tmp/pss-planner-prechange.js",
+  "currentModule": "/tmp/pss-planner-final.js",
+  "configuration": {
+    "coldSamplesPerCase": 7,
+    "hotSamplesPerCase": 7,
+    "minimumHotBatchMs": 200,
+    "scenarios": [
+      "large-six",
+      "trio-a",
+      "trio-b",
+      "single-deep",
+      "empty-inventory",
+      "no-enabled-targets"
+    ],
+    "modes": [
+      "guarantee",
+      "maximize"
+    ],
+    "beamWidths": [
+      60,
+      120,
+      300
+    ]
+  },
+  "aggregate": {
+    "cold": {
+      "baselineMedianMs": 43.7295205,
+      "currentMedianMs": 15.681771000000001,
+      "ratio": 0.35860834559116656,
+      "atLeastTwoTimesFaster": true
+    },
+    "hot": {
+      "baselineMedianMs": 4.611792007192676,
+      "currentMedianMs": 0.5259302963914153,
+      "ratio": 0.11404033303565297,
+      "atLeastTwoTimesFaster": true
+    }
+  },
+  "gates": {
+    "qualityAndCorrectness": true,
+    "noColdRegressionOverTenPercent": true,
+    "pass": true,
+    "failingCases": [],
+    "coldRegressions": []
+  },
+  "cases": [
+    {
+      "scenario": "large-six",
+      "mode": "guarantee",
+      "beamWidth": 60,
+      "cold": {
+        "baselineSamplesMs": [
+          146.711042,
+          150.6935,
+          149.356417,
+          147.194584,
+          147.0265,
+          146.664542,
+          145.8145
+        ],
+        "currentSamplesMs": [
+          53.7375,
+          52.613167,
+          57.791084,
+          52.57425,
+          55.453834,
+          53.033959,
+          57.005291
+        ],
+        "baselineMedianMs": 147.0265,
+        "currentMedianMs": 53.7375,
+        "ratio": 0.36549533587482524
+      },
+      "hot": {
+        "baselineSamplesMs": [
+          36.511097166666666,
+          33.86264583333333,
+          33.73247216666667,
+          33.17014285714286,
+          32.73153571428571,
+          33.57546516666667,
+          33.039065428571426
+        ],
+        "currentSamplesMs": [
+          2.4145587349397593,
+          2.367455882352941,
+          2.242688888888889,
+          2.276463545454545,
+          2.176196554347826,
+          2.1621738387096774,
+          2.3144042183908047
+        ],
+        "baselineMedianMs": 33.57546516666667,
+        "currentMedianMs": 2.276463545454545,
+        "ratio": 0.06780140004477411,
+        "baselineCalls": 45,
+        "currentCalls": 618
+      },
+      "deterministic": {
+        "baseline": true,
+        "current": true
+      },
+      "cache": {
+        "baselineFillMisses": 6,
+        "baselineHotHits": 6,
+        "currentFillMisses": 6,
+        "currentHotHits": 6,
+        "currentColdMiss": true,
+        "currentHotHit": true,
+        "hotResultsValid": true,
+        "qualityMatchesCold": true
+      },
+      "quality": {
+        "pass": true,
+        "errors": []
+      },
+      "baseline": {
+        "cacheHits": 0,
+        "cacheMisses": 6,
+        "truncated": false,
+        "expectedSatisfied": 2,
+        "satisfiedExpectedTargetIds": [
+          "110",
+          "114"
+        ],
+        "enabledExpected": 2,
+        "satisfied": 6,
+        "targetProduction": {
+          "110": 1,
+          "114": 1,
+          "115": 0,
+          "116": 39,
+          "125": 0,
+          "196": 1
+        },
+        "totalProduced": 42,
+        "demandCost": 227.47833333333332,
+        "valid": true,
+        "validationErrors": []
+      },
+      "current": {
+        "cacheHits": 0,
+        "cacheMisses": 6,
+        "truncated": false,
+        "expectedSatisfied": 2,
+        "satisfiedExpectedTargetIds": [
+          "110",
+          "114"
+        ],
+        "enabledExpected": 2,
+        "satisfied": 6,
+        "targetProduction": {
+          "110": 1,
+          "114": 1,
+          "115": 0,
+          "116": 39,
+          "125": 0,
+          "196": 1
+        },
+        "totalProduced": 42,
+        "demandCost": 227.47833333333332,
+        "valid": true,
+        "validationErrors": []
+      }
+    },
+    {
+      "scenario": "large-six",
+      "mode": "guarantee",
+      "beamWidth": 120,
+      "cold": {
+        "baselineSamplesMs": [
+          334.7285,
+          331.373792,
+          329.732792,
+          338.912834,
+          330.941042,
+          329.21725,
+          334.209709
+        ],
+        "currentSamplesMs": [
+          79.979333,
+          81.421292,
+          82.133667,
+          78.700166,
+          79.4765,
+          79.843625,
+          80.39575
+        ],
+        "baselineMedianMs": 331.373792,
+        "currentMedianMs": 79.979333,
+        "ratio": 0.2413568451424185
+      },
+      "hot": {
+        "baselineSamplesMs": [
+          78.42058333333334,
+          75.58281966666667,
+          77.57580533333334,
+          73.78819433333334,
+          74.88433333333333,
+          73.10865266666667,
+          74.51747233333333
+        ],
+        "currentSamplesMs": [
+          4.135075673469387,
+          4.05272582,
+          3.8734359038461537,
+          3.879020826923077,
+          4.0663,
+          3.7712777777777777,
+          3.7529675925925923
+        ],
+        "baselineMedianMs": 74.88433333333333,
+        "currentMedianMs": 3.879020826923077,
+        "ratio": 0.051800165057974884,
+        "baselineCalls": 21,
+        "currentCalls": 361
+      },
+      "deterministic": {
+        "baseline": true,
+        "current": true
+      },
+      "cache": {
+        "baselineFillMisses": 6,
+        "baselineHotHits": 6,
+        "currentFillMisses": 6,
+        "currentHotHits": 6,
+        "currentColdMiss": true,
+        "currentHotHit": true,
+        "hotResultsValid": true,
+        "qualityMatchesCold": true
+      },
+      "quality": {
+        "pass": true,
+        "errors": []
+      },
+      "baseline": {
+        "cacheHits": 0,
+        "cacheMisses": 6,
+        "truncated": false,
+        "expectedSatisfied": 2,
+        "satisfiedExpectedTargetIds": [
+          "110",
+          "114"
+        ],
+        "enabledExpected": 2,
+        "satisfied": 6,
+        "targetProduction": {
+          "110": 1,
+          "114": 1,
+          "115": 40,
+          "116": 1,
+          "125": 0,
+          "196": 1
+        },
+        "totalProduced": 44,
+        "demandCost": 240.105,
+        "valid": true,
+        "validationErrors": []
+      },
+      "current": {
+        "cacheHits": 0,
+        "cacheMisses": 6,
+        "truncated": false,
+        "expectedSatisfied": 2,
+        "satisfiedExpectedTargetIds": [
+          "110",
+          "114"
+        ],
+        "enabledExpected": 2,
+        "satisfied": 6,
+        "targetProduction": {
+          "110": 1,
+          "114": 1,
+          "115": 40,
+          "116": 1,
+          "125": 0,
+          "196": 1
+        },
+        "totalProduced": 44,
+        "demandCost": 240.105,
+        "valid": true,
+        "validationErrors": []
+      }
+    },
+    {
+      "scenario": "large-six",
+      "mode": "guarantee",
+      "beamWidth": 300,
+      "cold": {
+        "baselineSamplesMs": [
+          603.574416,
+          607.859542,
+          615.535208,
+          615.061542,
+          603.379,
+          610.82175,
+          624.951
+        ],
+        "currentSamplesMs": [
+          102.025708,
+          105.72925,
+          101.468042,
+          101.010875,
+          105.175208,
+          104.770458,
+          102.485
+        ],
+        "baselineMedianMs": 610.82175,
+        "currentMedianMs": 102.485,
+        "ratio": 0.16778217213123142
+      },
+      "hot": {
+        "baselineSamplesMs": [
+          213.16825,
+          208.196917,
+          208.146375,
+          210.707041,
+          207.554542,
+          206.284667,
+          209.484125
+        ],
+        "currentSamplesMs": [
+          11.218847222222221,
+          10.4860396,
+          10.10305625,
+          10.2800854,
+          10.93778947368421,
+          10.312991700000001,
+          10.555820157894738
+        ],
+        "baselineMedianMs": 208.196917,
+        "currentMedianMs": 10.4860396,
+        "ratio": 0.05036596963633232,
+        "baselineCalls": 7,
+        "currentCalls": 136
+      },
+      "deterministic": {
+        "baseline": true,
+        "current": true
+      },
+      "cache": {
+        "baselineFillMisses": 6,
+        "baselineHotHits": 6,
+        "currentFillMisses": 6,
+        "currentHotHits": 6,
+        "currentColdMiss": true,
+        "currentHotHit": true,
+        "hotResultsValid": true,
+        "qualityMatchesCold": true
+      },
+      "quality": {
+        "pass": true,
+        "errors": []
+      },
+      "baseline": {
+        "cacheHits": 0,
+        "cacheMisses": 6,
+        "truncated": false,
+        "expectedSatisfied": 2,
+        "satisfiedExpectedTargetIds": [
+          "110",
+          "114"
+        ],
+        "enabledExpected": 2,
+        "satisfied": 6,
+        "targetProduction": {
+          "110": 1,
+          "114": 1,
+          "115": 40,
+          "116": 1,
+          "125": 0,
+          "196": 1
+        },
+        "totalProduced": 44,
+        "demandCost": 240.105,
+        "valid": true,
+        "validationErrors": []
+      },
+      "current": {
+        "cacheHits": 0,
+        "cacheMisses": 6,
+        "truncated": false,
+        "expectedSatisfied": 2,
+        "satisfiedExpectedTargetIds": [
+          "110",
+          "114"
+        ],
+        "enabledExpected": 2,
+        "satisfied": 6,
+        "targetProduction": {
+          "110": 1,
+          "114": 1,
+          "115": 40,
+          "116": 1,
+          "125": 0,
+          "196": 1
+        },
+        "totalProduced": 44,
+        "demandCost": 240.105,
+        "valid": true,
+        "validationErrors": []
+      }
+    },
+    {
+      "scenario": "large-six",
+      "mode": "maximize",
+      "beamWidth": 60,
+      "cold": {
+        "baselineSamplesMs": [
+          142.588042,
+          141.472125,
+          142.4545,
+          140.502542,
+          139.643083,
+          140.715667,
+          140.206083
+        ],
+        "currentSamplesMs": [
+          53.807,
+          53.298625,
+          54.266916,
+          52.644,
+          54.234416,
+          53.168333,
+          53.20275
+        ],
+        "baselineMedianMs": 140.715667,
+        "currentMedianMs": 53.298625,
+        "ratio": 0.37876823623342526
+      },
+      "hot": {
+        "baselineSamplesMs": [
+          28.56761975,
+          26.712572875,
+          26.79328125,
+          27.26646875,
+          26.503026,
+          26.774640625,
+          26.94102075
+        ],
+        "currentSamplesMs": [
+          1.9072884857142856,
+          1.8562662037037039,
+          1.804159162162162,
+          1.7730608407079647,
+          1.8403803486238532,
+          1.7714015486725663,
+          1.7537333391304348
+        ],
+        "baselineMedianMs": 26.79328125,
+        "currentMedianMs": 1.804159162162162,
+        "ratio": 0.06733625289594428,
+        "baselineCalls": 56,
+        "currentCalls": 774
+      },
+      "deterministic": {
+        "baseline": true,
+        "current": true
+      },
+      "cache": {
+        "baselineFillMisses": 6,
+        "baselineHotHits": 6,
+        "currentFillMisses": 6,
+        "currentHotHits": 6,
+        "currentColdMiss": true,
+        "currentHotHit": true,
+        "hotResultsValid": true,
+        "qualityMatchesCold": true
+      },
+      "quality": {
+        "pass": true,
+        "errors": []
+      },
+      "baseline": {
+        "cacheHits": 0,
+        "cacheMisses": 6,
+        "truncated": false,
+        "expectedSatisfied": 1,
+        "satisfiedExpectedTargetIds": [
+          "110"
+        ],
+        "enabledExpected": 2,
+        "satisfied": 5,
+        "targetProduction": {
+          "110": 1,
+          "114": 0,
+          "115": 41,
+          "116": 1,
+          "125": 0,
+          "196": 0
+        },
+        "totalProduced": 43,
+        "demandCost": 235.07,
+        "valid": true,
+        "validationErrors": []
+      },
+      "current": {
+        "cacheHits": 0,
+        "cacheMisses": 6,
+        "truncated": false,
+        "expectedSatisfied": 1,
+        "satisfiedExpectedTargetIds": [
+          "110"
+        ],
+        "enabledExpected": 2,
+        "satisfied": 5,
+        "targetProduction": {
+          "110": 1,
+          "114": 0,
+          "115": 41,
+          "116": 1,
+          "125": 0,
+          "196": 0
+        },
+        "totalProduced": 43,
+        "demandCost": 235.07,
+        "valid": true,
+        "validationErrors": []
+      }
+    },
+    {
+      "scenario": "large-six",
+      "mode": "maximize",
+      "beamWidth": 120,
+      "cold": {
+        "baselineSamplesMs": [
+          335.975125,
+          330.916583,
+          336.593125,
+          333.701583,
+          335.616875,
+          333.979125,
+          334.574833
+        ],
+        "currentSamplesMs": [
+          77.49475,
+          84.602667,
+          78.747083,
+          78.710792,
+          78.920334,
+          78.426459,
+          77.826667
+        ],
+        "baselineMedianMs": 334.574833,
+        "currentMedianMs": 78.710792,
+        "ratio": 0.23525616465001717
+      },
+      "hot": {
+        "baselineSamplesMs": [
+          79.88405566666667,
+          76.701278,
+          77.124528,
+          75.91043066666667,
+          74.86144466666667,
+          76.939972,
+          75.080764
+        ],
+        "currentSamplesMs": [
+          4.397367760869566,
+          4.392128608695652,
+          4.04504418,
+          4.03053834,
+          4.054775,
+          3.9807826862745097,
+          4.03548168
+        ],
+        "baselineMedianMs": 76.701278,
+        "currentMedianMs": 4.04504418,
+        "ratio": 0.052737637305078536,
+        "baselineCalls": 21,
+        "currentCalls": 343
+      },
+      "deterministic": {
+        "baseline": true,
+        "current": true
+      },
+      "cache": {
+        "baselineFillMisses": 6,
+        "baselineHotHits": 6,
+        "currentFillMisses": 6,
+        "currentHotHits": 6,
+        "currentColdMiss": true,
+        "currentHotHit": true,
+        "hotResultsValid": true,
+        "qualityMatchesCold": true
+      },
+      "quality": {
+        "pass": true,
+        "errors": []
+      },
+      "baseline": {
+        "cacheHits": 0,
+        "cacheMisses": 6,
+        "truncated": false,
+        "expectedSatisfied": 2,
+        "satisfiedExpectedTargetIds": [
+          "110",
+          "114"
+        ],
+        "enabledExpected": 2,
+        "satisfied": 6,
+        "targetProduction": {
+          "110": 1,
+          "114": 1,
+          "115": 40,
+          "116": 1,
+          "125": 0,
+          "196": 1
+        },
+        "totalProduced": 44,
+        "demandCost": 240.105,
+        "valid": true,
+        "validationErrors": []
+      },
+      "current": {
+        "cacheHits": 0,
+        "cacheMisses": 6,
+        "truncated": false,
+        "expectedSatisfied": 2,
+        "satisfiedExpectedTargetIds": [
+          "110",
+          "114"
+        ],
+        "enabledExpected": 2,
+        "satisfied": 6,
+        "targetProduction": {
+          "110": 1,
+          "114": 1,
+          "115": 40,
+          "116": 1,
+          "125": 0,
+          "196": 1
+        },
+        "totalProduced": 44,
+        "demandCost": 240.105,
+        "valid": true,
+        "validationErrors": []
+      }
+    },
+    {
+      "scenario": "large-six",
+      "mode": "maximize",
+      "beamWidth": 300,
+      "cold": {
+        "baselineSamplesMs": [
+          598.6595,
+          606.01275,
+          593.291334,
+          616.670833,
+          601.942833,
+          603.014541,
+          601.312459
+        ],
+        "currentSamplesMs": [
+          96.341959,
+          101.063167,
+          97.2805,
+          100.6815,
+          101.075542,
+          106.106083,
+          100.46175
+        ],
+        "baselineMedianMs": 601.942833,
+        "currentMedianMs": 100.6815,
+        "ratio": 0.16726090000642968
+      },
+      "hot": {
+        "baselineSamplesMs": [
+          210.604917,
+          203.083834,
+          203.876416,
+          202.652917,
+          206.977583,
+          200.739125,
+          200.378875
+        ],
+        "currentSamplesMs": [
+          9.085675739130435,
+          8.16216664,
+          8.138185,
+          8.13585168,
+          8.18813,
+          8.228745,
+          8.17542
+        ],
+        "baselineMedianMs": 203.083834,
+        "currentMedianMs": 8.17542,
+        "ratio": 0.04025638003269133,
+        "baselineCalls": 7,
+        "currentCalls": 173
+      },
+      "deterministic": {
+        "baseline": true,
+        "current": true
+      },
+      "cache": {
+        "baselineFillMisses": 6,
+        "baselineHotHits": 6,
+        "currentFillMisses": 6,
+        "currentHotHits": 6,
+        "currentColdMiss": true,
+        "currentHotHit": true,
+        "hotResultsValid": true,
+        "qualityMatchesCold": true
+      },
+      "quality": {
+        "pass": true,
+        "errors": []
+      },
+      "baseline": {
+        "cacheHits": 0,
+        "cacheMisses": 6,
+        "truncated": false,
+        "expectedSatisfied": 2,
+        "satisfiedExpectedTargetIds": [
+          "110",
+          "114"
+        ],
+        "enabledExpected": 2,
+        "satisfied": 6,
+        "targetProduction": {
+          "110": 1,
+          "114": 1,
+          "115": 40,
+          "116": 1,
+          "125": 0,
+          "196": 1
+        },
+        "totalProduced": 44,
+        "demandCost": 240.105,
+        "valid": true,
+        "validationErrors": []
+      },
+      "current": {
+        "cacheHits": 0,
+        "cacheMisses": 6,
+        "truncated": false,
+        "expectedSatisfied": 2,
+        "satisfiedExpectedTargetIds": [
+          "110",
+          "114"
+        ],
+        "enabledExpected": 2,
+        "satisfied": 6,
+        "targetProduction": {
+          "110": 1,
+          "114": 1,
+          "115": 40,
+          "116": 1,
+          "125": 0,
+          "196": 1
+        },
+        "totalProduced": 44,
+        "demandCost": 240.105,
+        "valid": true,
+        "validationErrors": []
+      }
+    },
+    {
+      "scenario": "trio-a",
+      "mode": "guarantee",
+      "beamWidth": 60,
+      "cold": {
+        "baselineSamplesMs": [
+          50.525417,
+          50.5755,
+          49.898709,
+          50.131375,
+          49.584,
+          49.579417,
+          50.247458
+        ],
+        "currentSamplesMs": [
+          20.967833,
+          21.475458,
+          22.180916,
+          20.879542,
+          21.4415,
+          20.681083,
+          21.332416
+        ],
+        "baselineMedianMs": 50.131375,
+        "currentMedianMs": 21.332416,
+        "ratio": 0.4255302392962491
+      },
+      "hot": {
+        "baselineSamplesMs": [
+          15.142848214285715,
+          13.701447266666666,
+          14.433319466666667,
+          13.9847028,
+          12.80641925,
+          12.6081900625,
+          12.556390625
+        ],
+        "currentSamplesMs": [
+          0.9193216743119266,
+          0.8391311004184101,
+          0.8426558109243698,
+          0.8226907459016393,
+          0.8226279057377048,
+          0.8235510987654321,
+          0.8223603114754098
+        ],
+        "baselineMedianMs": 13.701447266666666,
+        "currentMedianMs": 0.8235510987654321,
+        "ratio": 0.06010686920417484,
+        "baselineCalls": 107,
+        "currentCalls": 1670
+      },
+      "deterministic": {
+        "baseline": true,
+        "current": true
+      },
+      "cache": {
+        "baselineFillMisses": 3,
+        "baselineHotHits": 3,
+        "currentFillMisses": 3,
+        "currentHotHits": 3,
+        "currentColdMiss": true,
+        "currentHotHit": true,
+        "hotResultsValid": true,
+        "qualityMatchesCold": true
+      },
+      "quality": {
+        "pass": true,
+        "errors": []
+      },
+      "baseline": {
+        "cacheHits": 0,
+        "cacheMisses": 3,
+        "truncated": false,
+        "expectedSatisfied": 1,
+        "satisfiedExpectedTargetIds": [
+          "381"
+        ],
+        "enabledExpected": 1,
+        "satisfied": 3,
+        "targetProduction": {
+          "147": 22,
+          "381": 1,
+          "437": 4
+        },
+        "totalProduced": 27,
+        "demandCost": 141.91,
+        "valid": true,
+        "validationErrors": []
+      },
+      "current": {
+        "cacheHits": 0,
+        "cacheMisses": 3,
+        "truncated": false,
+        "expectedSatisfied": 1,
+        "satisfiedExpectedTargetIds": [
+          "381"
+        ],
+        "enabledExpected": 1,
+        "satisfied": 3,
+        "targetProduction": {
+          "147": 22,
+          "381": 1,
+          "437": 4
+        },
+        "totalProduced": 27,
+        "demandCost": 141.91,
+        "valid": true,
+        "validationErrors": []
+      }
+    },
+    {
+      "scenario": "trio-a",
+      "mode": "guarantee",
+      "beamWidth": 120,
+      "cold": {
+        "baselineSamplesMs": [
+          96.2465,
+          93.997,
+          93.361334,
+          95.959291,
+          97.482166,
+          96.354042,
+          94.74075
+        ],
+        "currentSamplesMs": [
+          27.231,
+          27.047041,
+          26.968334,
+          27.198292,
+          26.788875,
+          26.085416,
+          26.719959
+        ],
+        "baselineMedianMs": 95.959291,
+        "currentMedianMs": 26.968334,
+        "ratio": 0.2810393211429626
+      },
+      "hot": {
+        "baselineSamplesMs": [
+          31.794863142857142,
+          30.697488142857143,
+          30.04407142857143,
+          30.461869,
+          29.97179171428571,
+          29.675309571428574,
+          29.396916714285712
+        ],
+        "currentSamplesMs": [
+          1.877947429906542,
+          1.7636217105263159,
+          1.7443282608695652,
+          1.7314055258620689,
+          1.729674922413793,
+          1.7959866071428572,
+          1.755938596491228
+        ],
+        "baselineMedianMs": 30.04407142857143,
+        "currentMedianMs": 1.755938596491228,
+        "ratio": 0.05844542743369191,
+        "baselineCalls": 49,
+        "currentCalls": 794
+      },
+      "deterministic": {
+        "baseline": true,
+        "current": true
+      },
+      "cache": {
+        "baselineFillMisses": 3,
+        "baselineHotHits": 3,
+        "currentFillMisses": 3,
+        "currentHotHits": 3,
+        "currentColdMiss": true,
+        "currentHotHit": true,
+        "hotResultsValid": true,
+        "qualityMatchesCold": true
+      },
+      "quality": {
+        "pass": true,
+        "errors": []
+      },
+      "baseline": {
+        "cacheHits": 0,
+        "cacheMisses": 3,
+        "truncated": false,
+        "expectedSatisfied": 1,
+        "satisfiedExpectedTargetIds": [
+          "381"
+        ],
+        "enabledExpected": 1,
+        "satisfied": 3,
+        "targetProduction": {
+          "147": 22,
+          "381": 1,
+          "437": 4
+        },
+        "totalProduced": 27,
+        "demandCost": 141.91,
+        "valid": true,
+        "validationErrors": []
+      },
+      "current": {
+        "cacheHits": 0,
+        "cacheMisses": 3,
+        "truncated": false,
+        "expectedSatisfied": 1,
+        "satisfiedExpectedTargetIds": [
+          "381"
+        ],
+        "enabledExpected": 1,
+        "satisfied": 3,
+        "targetProduction": {
+          "147": 22,
+          "381": 1,
+          "437": 4
+        },
+        "totalProduced": 27,
+        "demandCost": 141.91,
+        "valid": true,
+        "validationErrors": []
+      }
+    },
+    {
+      "scenario": "trio-a",
+      "mode": "guarantee",
+      "beamWidth": 300,
+      "cold": {
+        "baselineSamplesMs": [
+          161.8885,
+          163.032083,
+          159.62075,
+          159.56425,
+          160.576125,
+          159.488209,
+          158.797833
+        ],
+        "currentSamplesMs": [
+          38.259917,
+          38.271333,
+          37.137959,
+          37.387458,
+          38.851208,
+          36.991833,
+          37.0365
+        ],
+        "baselineMedianMs": 159.62075,
+        "currentMedianMs": 37.387458,
+        "ratio": 0.23422680321950626
+      },
+      "hot": {
+        "baselineSamplesMs": [
+          67.284389,
+          63.43258325,
+          62.28366675,
+          63.258875,
+          63.177354,
+          62.9968125,
+          63.02727075
+        ],
+        "currentSamplesMs": [
+          6.465049741935483,
+          5.800259514285714,
+          5.754241685714286,
+          6.110939393939394,
+          5.757682142857143,
+          5.857886914285714,
+          5.773865457142858
+        ],
+        "baselineMedianMs": 63.177354,
+        "currentMedianMs": 5.800259514285714,
+        "ratio": 0.09180915544968397,
+        "baselineCalls": 27,
+        "currentCalls": 239
+      },
+      "deterministic": {
+        "baseline": true,
+        "current": true
+      },
+      "cache": {
+        "baselineFillMisses": 3,
+        "baselineHotHits": 3,
+        "currentFillMisses": 3,
+        "currentHotHits": 3,
+        "currentColdMiss": true,
+        "currentHotHit": true,
+        "hotResultsValid": true,
+        "qualityMatchesCold": true
+      },
+      "quality": {
+        "pass": true,
+        "errors": []
+      },
+      "baseline": {
+        "cacheHits": 0,
+        "cacheMisses": 3,
+        "truncated": false,
+        "expectedSatisfied": 1,
+        "satisfiedExpectedTargetIds": [
+          "381"
+        ],
+        "enabledExpected": 1,
+        "satisfied": 3,
+        "targetProduction": {
+          "147": 22,
+          "381": 1,
+          "437": 4
+        },
+        "totalProduced": 27,
+        "demandCost": 141.91,
+        "valid": true,
+        "validationErrors": []
+      },
+      "current": {
+        "cacheHits": 0,
+        "cacheMisses": 3,
+        "truncated": false,
+        "expectedSatisfied": 1,
+        "satisfiedExpectedTargetIds": [
+          "381"
+        ],
+        "enabledExpected": 1,
+        "satisfied": 3,
+        "targetProduction": {
+          "147": 22,
+          "381": 1,
+          "437": 4
+        },
+        "totalProduced": 27,
+        "demandCost": 141.91,
+        "valid": true,
+        "validationErrors": []
+      }
+    },
+    {
+      "scenario": "trio-a",
+      "mode": "maximize",
+      "beamWidth": 60,
+      "cold": {
+        "baselineSamplesMs": [
+          60.513167,
+          61.771542,
+          58.577125,
+          60.546208,
+          61.167792,
+          60.835416,
+          61.424875
+        ],
+        "currentSamplesMs": [
+          21.769,
+          21.397625,
+          21.483458,
+          21.073,
+          20.96875,
+          21.351542,
+          20.523042
+        ],
+        "baselineMedianMs": 60.835416,
+        "currentMedianMs": 21.351542,
+        "ratio": 0.3509722363039319
+      },
+      "hot": {
+        "baselineSamplesMs": [
+          22.539088,
+          20.8142542,
+          19.845969727272728,
+          20.0789917,
+          19.70496590909091,
+          19.963060545454546,
+          20.122887499999997
+        ],
+        "currentSamplesMs": [
+          0.9106009500000001,
+          0.8284330247933884,
+          0.8433961848739496,
+          0.8599887339055794,
+          0.8199993155737705,
+          0.82597170781893,
+          0.8197250696721311
+        ],
+        "baselineMedianMs": 20.0789917,
+        "currentMedianMs": 0.8284330247933884,
+        "ratio": 0.04125869651081077,
+        "baselineCalls": 72,
+        "currentCalls": 1664
+      },
+      "deterministic": {
+        "baseline": true,
+        "current": true
+      },
+      "cache": {
+        "baselineFillMisses": 3,
+        "baselineHotHits": 3,
+        "currentFillMisses": 3,
+        "currentHotHits": 3,
+        "currentColdMiss": true,
+        "currentHotHit": true,
+        "hotResultsValid": true,
+        "qualityMatchesCold": true
+      },
+      "quality": {
+        "pass": true,
+        "errors": []
+      },
+      "baseline": {
+        "cacheHits": 0,
+        "cacheMisses": 3,
+        "truncated": false,
+        "expectedSatisfied": 1,
+        "satisfiedExpectedTargetIds": [
+          "381"
+        ],
+        "enabledExpected": 1,
+        "satisfied": 3,
+        "targetProduction": {
+          "147": 22,
+          "381": 1,
+          "437": 4
+        },
+        "totalProduced": 27,
+        "demandCost": 141.91,
+        "valid": true,
+        "validationErrors": []
+      },
+      "current": {
+        "cacheHits": 0,
+        "cacheMisses": 3,
+        "truncated": false,
+        "expectedSatisfied": 1,
+        "satisfiedExpectedTargetIds": [
+          "381"
+        ],
+        "enabledExpected": 1,
+        "satisfied": 3,
+        "targetProduction": {
+          "147": 22,
+          "381": 1,
+          "437": 4
+        },
+        "totalProduced": 27,
+        "demandCost": 141.91,
+        "valid": true,
+        "validationErrors": []
+      }
+    },
+    {
+      "scenario": "trio-a",
+      "mode": "maximize",
+      "beamWidth": 120,
+      "cold": {
+        "baselineSamplesMs": [
+          108.352375,
+          106.253708,
+          109.457209,
+          109.423166,
+          107.540458,
+          110.522292,
+          107.424666
+        ],
+        "currentSamplesMs": [
+          30.240083,
+          26.3595,
+          26.841292,
+          27.718209,
+          26.537,
+          27.026584,
+          27.455
+        ],
+        "baselineMedianMs": 108.352375,
+        "currentMedianMs": 27.026584,
+        "ratio": 0.24943231747342873
+      },
+      "hot": {
+        "baselineSamplesMs": [
+          45.397025,
+          42.15955,
+          40.491808400000004,
+          40.9499916,
+          40.75675,
+          41.6907082,
+          40.7082
+        ],
+        "currentSamplesMs": [
+          2.9592640882352943,
+          2.8721910714285714,
+          2.781780821917808,
+          2.6649797105263158,
+          2.7105630675675676,
+          2.7244420000000003,
+          2.3598936352941178
+        ],
+        "baselineMedianMs": 40.9499916,
+        "currentMedianMs": 2.7244420000000003,
+        "ratio": 0.06653095381831532,
+        "baselineCalls": 35,
+        "currentCalls": 520
+      },
+      "deterministic": {
+        "baseline": true,
+        "current": true
+      },
+      "cache": {
+        "baselineFillMisses": 3,
+        "baselineHotHits": 3,
+        "currentFillMisses": 3,
+        "currentHotHits": 3,
+        "currentColdMiss": true,
+        "currentHotHit": true,
+        "hotResultsValid": true,
+        "qualityMatchesCold": true
+      },
+      "quality": {
+        "pass": true,
+        "errors": []
+      },
+      "baseline": {
+        "cacheHits": 0,
+        "cacheMisses": 3,
+        "truncated": false,
+        "expectedSatisfied": 1,
+        "satisfiedExpectedTargetIds": [
+          "381"
+        ],
+        "enabledExpected": 1,
+        "satisfied": 3,
+        "targetProduction": {
+          "147": 22,
+          "381": 1,
+          "437": 4
+        },
+        "totalProduced": 27,
+        "demandCost": 141.91,
+        "valid": true,
+        "validationErrors": []
+      },
+      "current": {
+        "cacheHits": 0,
+        "cacheMisses": 3,
+        "truncated": false,
+        "expectedSatisfied": 1,
+        "satisfiedExpectedTargetIds": [
+          "381"
+        ],
+        "enabledExpected": 1,
+        "satisfied": 3,
+        "targetProduction": {
+          "147": 22,
+          "381": 1,
+          "437": 4
+        },
+        "totalProduced": 27,
+        "demandCost": 141.91,
+        "valid": true,
+        "validationErrors": []
+      }
+    },
+    {
+      "scenario": "trio-a",
+      "mode": "maximize",
+      "beamWidth": 300,
+      "cold": {
+        "baselineSamplesMs": [
+          186.20225,
+          185.038459,
+          184.216791,
+          183.096958,
+          183.000417,
+          186.164917,
+          190.623208
+        ],
+        "currentSamplesMs": [
+          36.798083,
+          37.562583,
+          36.385458,
+          38.369917,
+          38.810584,
+          37.872167,
+          39.230667
+        ],
+        "baselineMedianMs": 185.038459,
+        "currentMedianMs": 37.872167,
+        "ratio": 0.20467186770075727
+      },
+      "hot": {
+        "baselineSamplesMs": [
+          94.73906933333335,
+          92.93155566666667,
+          91.45134733333333,
+          86.10829166666667,
+          89.789486,
+          85.97429166666666,
+          87.67705566666666
+        ],
+        "currentSamplesMs": [
+          6.2535143125,
+          5.882444852941177,
+          5.718332166666666,
+          5.814557142857143,
+          5.6918692222222225,
+          5.644365722222222,
+          5.9753137058823524
+        ],
+        "baselineMedianMs": 89.789486,
+        "currentMedianMs": 5.814557142857143,
+        "ratio": 0.06475766152461485,
+        "baselineCalls": 21,
+        "currentCalls": 243
+      },
+      "deterministic": {
+        "baseline": true,
+        "current": true
+      },
+      "cache": {
+        "baselineFillMisses": 3,
+        "baselineHotHits": 3,
+        "currentFillMisses": 3,
+        "currentHotHits": 3,
+        "currentColdMiss": true,
+        "currentHotHit": true,
+        "hotResultsValid": true,
+        "qualityMatchesCold": true
+      },
+      "quality": {
+        "pass": true,
+        "errors": []
+      },
+      "baseline": {
+        "cacheHits": 0,
+        "cacheMisses": 3,
+        "truncated": false,
+        "expectedSatisfied": 1,
+        "satisfiedExpectedTargetIds": [
+          "381"
+        ],
+        "enabledExpected": 1,
+        "satisfied": 3,
+        "targetProduction": {
+          "147": 22,
+          "381": 1,
+          "437": 4
+        },
+        "totalProduced": 27,
+        "demandCost": 141.91,
+        "valid": true,
+        "validationErrors": []
+      },
+      "current": {
+        "cacheHits": 0,
+        "cacheMisses": 3,
+        "truncated": false,
+        "expectedSatisfied": 1,
+        "satisfiedExpectedTargetIds": [
+          "381"
+        ],
+        "enabledExpected": 1,
+        "satisfied": 3,
+        "targetProduction": {
+          "147": 22,
+          "381": 1,
+          "437": 4
+        },
+        "totalProduced": 27,
+        "demandCost": 141.91,
+        "valid": true,
+        "validationErrors": []
+      }
+    },
+    {
+      "scenario": "trio-b",
+      "mode": "guarantee",
+      "beamWidth": 60,
+      "cold": {
+        "baselineSamplesMs": [
+          33.192,
+          34.406,
+          33.78525,
+          34.118167,
+          33.868917,
+          33.676833,
+          33.615708
+        ],
+        "currentSamplesMs": [
+          14.210041,
+          17.208209,
+          14.375542,
+          14.323208,
+          14.585541,
+          14.504875,
+          14.247583
+        ],
+        "baselineMedianMs": 33.78525,
+        "currentMedianMs": 14.375542,
+        "ratio": 0.42549757660517534
+      },
+      "hot": {
+        "baselineSamplesMs": [
+          8.390625,
+          7.423359555555556,
+          7.636027777777778,
+          6.517729838709677,
+          6.4275013125,
+          6.41945184375,
+          6.373078125
+        ],
+        "currentSamplesMs": [
+          1.086416891891892,
+          0.9734087766990291,
+          0.9821225490196079,
+          0.9839562941176471,
+          0.9946638039215686,
+          0.9793675194174757,
+          0.9734587378640777
+        ],
+        "baselineMedianMs": 6.517729838709677,
+        "currentMedianMs": 0.9821225490196079,
+        "ratio": 0.15068475885371155,
+        "baselineCalls": 205,
+        "currentCalls": 1415
+      },
+      "deterministic": {
+        "baseline": true,
+        "current": true
+      },
+      "cache": {
+        "baselineFillMisses": 3,
+        "baselineHotHits": 3,
+        "currentFillMisses": 3,
+        "currentHotHits": 3,
+        "currentColdMiss": true,
+        "currentHotHit": true,
+        "hotResultsValid": true,
+        "qualityMatchesCold": true
+      },
+      "quality": {
+        "pass": true,
+        "errors": []
+      },
+      "baseline": {
+        "cacheHits": 0,
+        "cacheMisses": 3,
+        "truncated": false,
+        "expectedSatisfied": 1,
+        "satisfiedExpectedTargetIds": [
+          "270"
+        ],
+        "enabledExpected": 1,
+        "satisfied": 3,
+        "targetProduction": {
+          "270": 1,
+          "383": 12,
+          "466": 0
+        },
+        "totalProduced": 13,
+        "demandCost": 74.27166666666666,
+        "valid": true,
+        "validationErrors": []
+      },
+      "current": {
+        "cacheHits": 0,
+        "cacheMisses": 3,
+        "truncated": false,
+        "expectedSatisfied": 1,
+        "satisfiedExpectedTargetIds": [
+          "270"
+        ],
+        "enabledExpected": 1,
+        "satisfied": 3,
+        "targetProduction": {
+          "270": 1,
+          "383": 12,
+          "466": 0
+        },
+        "totalProduced": 13,
+        "demandCost": 74.27166666666666,
+        "valid": true,
+        "validationErrors": []
+      }
+    },
+    {
+      "scenario": "trio-b",
+      "mode": "guarantee",
+      "beamWidth": 120,
+      "cold": {
+        "baselineSamplesMs": [
+          53.111167,
+          50.083291,
+          53.457458,
+          52.573541,
+          52.10125,
+          52.966042,
+          50.648958
+        ],
+        "currentSamplesMs": [
+          20.26,
+          19.767583,
+          19.78325,
+          20.245625,
+          19.475833,
+          21.297875,
+          20.214167
+        ],
+        "baselineMedianMs": 52.573541,
+        "currentMedianMs": 20.214167,
+        "ratio": 0.3844931616837451
+      },
+      "hot": {
+        "baselineSamplesMs": [
+          12.8284635625,
+          11.521465277777777,
+          10.880631578947368,
+          10.29342915,
+          10.38750415,
+          10.3331354,
+          10.17293335
+        ],
+        "currentSamplesMs": [
+          1.111557411111111,
+          0.9982309303482587,
+          0.9772851658536585,
+          0.9680722657004831,
+          0.9743675194174757,
+          0.9731235825242719,
+          0.9694212995169083
+        ],
+        "baselineMedianMs": 10.38750415,
+        "currentMedianMs": 0.9743675194174757,
+        "ratio": 0.09380188978480222,
+        "baselineCalls": 133,
+        "currentCalls": 1412
+      },
+      "deterministic": {
+        "baseline": true,
+        "current": true
+      },
+      "cache": {
+        "baselineFillMisses": 3,
+        "baselineHotHits": 3,
+        "currentFillMisses": 3,
+        "currentHotHits": 3,
+        "currentColdMiss": true,
+        "currentHotHit": true,
+        "hotResultsValid": true,
+        "qualityMatchesCold": true
+      },
+      "quality": {
+        "pass": true,
+        "errors": []
+      },
+      "baseline": {
+        "cacheHits": 0,
+        "cacheMisses": 3,
+        "truncated": false,
+        "expectedSatisfied": 1,
+        "satisfiedExpectedTargetIds": [
+          "270"
+        ],
+        "enabledExpected": 1,
+        "satisfied": 3,
+        "targetProduction": {
+          "270": 1,
+          "383": 12,
+          "466": 0
+        },
+        "totalProduced": 13,
+        "demandCost": 74.225,
+        "valid": true,
+        "validationErrors": []
+      },
+      "current": {
+        "cacheHits": 0,
+        "cacheMisses": 3,
+        "truncated": false,
+        "expectedSatisfied": 1,
+        "satisfiedExpectedTargetIds": [
+          "270"
+        ],
+        "enabledExpected": 1,
+        "satisfied": 3,
+        "targetProduction": {
+          "270": 1,
+          "383": 12,
+          "466": 0
+        },
+        "totalProduced": 13,
+        "demandCost": 74.225,
+        "valid": true,
+        "validationErrors": []
+      }
+    },
+    {
+      "scenario": "trio-b",
+      "mode": "guarantee",
+      "beamWidth": 300,
+      "cold": {
+        "baselineSamplesMs": [
+          70.378,
+          71.110375,
+          70.568125,
+          70.720417,
+          69.713375,
+          71.331708,
+          70.597375
+        ],
+        "currentSamplesMs": [
+          22.875833,
+          21.749125,
+          23.746208,
+          24.742541,
+          22.097875,
+          22.503917,
+          22.158542
+        ],
+        "baselineMedianMs": 70.597375,
+        "currentMedianMs": 22.503917,
+        "ratio": 0.31876421750808726
+      },
+      "hot": {
+        "baselineSamplesMs": [
+          18.205640181818183,
+          17.283486083333333,
+          17.451375000000002,
+          17.511125,
+          15.96896476923077,
+          16.50836853846154,
+          17.053371583333334
+        ],
+        "currentSamplesMs": [
+          1.6191592741935483,
+          1.4671046204379563,
+          1.4552385289855072,
+          1.462022197080292,
+          1.4610313211678831,
+          1.4521126231884056,
+          1.4747644044117647
+        ],
+        "baselineMedianMs": 17.283486083333333,
+        "currentMedianMs": 1.462022197080292,
+        "ratio": 0.08459070062781704,
+        "baselineCalls": 85,
+        "currentCalls": 947
+      },
+      "deterministic": {
+        "baseline": true,
+        "current": true
+      },
+      "cache": {
+        "baselineFillMisses": 3,
+        "baselineHotHits": 3,
+        "currentFillMisses": 3,
+        "currentHotHits": 3,
+        "currentColdMiss": true,
+        "currentHotHit": true,
+        "hotResultsValid": true,
+        "qualityMatchesCold": true
+      },
+      "quality": {
+        "pass": true,
+        "errors": []
+      },
+      "baseline": {
+        "cacheHits": 0,
+        "cacheMisses": 3,
+        "truncated": false,
+        "expectedSatisfied": 1,
+        "satisfiedExpectedTargetIds": [
+          "270"
+        ],
+        "enabledExpected": 1,
+        "satisfied": 3,
+        "targetProduction": {
+          "270": 1,
+          "383": 12,
+          "466": 0
+        },
+        "totalProduced": 13,
+        "demandCost": 74.225,
+        "valid": true,
+        "validationErrors": []
+      },
+      "current": {
+        "cacheHits": 0,
+        "cacheMisses": 3,
+        "truncated": false,
+        "expectedSatisfied": 1,
+        "satisfiedExpectedTargetIds": [
+          "270"
+        ],
+        "enabledExpected": 1,
+        "satisfied": 3,
+        "targetProduction": {
+          "270": 1,
+          "383": 12,
+          "466": 0
+        },
+        "totalProduced": 13,
+        "demandCost": 74.225,
+        "valid": true,
+        "validationErrors": []
+      }
+    },
+    {
+      "scenario": "trio-b",
+      "mode": "maximize",
+      "beamWidth": 60,
+      "cold": {
+        "baselineSamplesMs": [
+          37.872209,
+          38.046709,
+          37.758,
+          38.105875,
+          37.462833,
+          37.603708,
+          37.690375
+        ],
+        "currentSamplesMs": [
+          14.151667,
+          14.494583,
+          14.074042,
+          14.498459,
+          14.384792,
+          14.509916,
+          14.459542
+        ],
+        "baselineMedianMs": 37.758,
+        "currentMedianMs": 14.459542,
+        "ratio": 0.3829530695481752
+      },
+      "hot": {
+        "baselineSamplesMs": [
+          12.295669117647058,
+          10.733758789473685,
+          10.911951736842104,
+          10.798173263157894,
+          11.012717105263159,
+          10.918504368421052,
+          10.866059210526316
+        ],
+        "currentSamplesMs": [
+          0.94175,
+          0.652908661237785,
+          0.642597625,
+          0.6457649193548387,
+          0.6495377435064935,
+          0.6381541942675159,
+          0.6386845828025477
+        ],
+        "baselineMedianMs": 10.911951736842104,
+        "currentMedianMs": 0.6457649193548387,
+        "ratio": 0.05917959819915055,
+        "baselineCalls": 131,
+        "currentCalls": 2078
+      },
+      "deterministic": {
+        "baseline": true,
+        "current": true
+      },
+      "cache": {
+        "baselineFillMisses": 3,
+        "baselineHotHits": 3,
+        "currentFillMisses": 3,
+        "currentHotHits": 3,
+        "currentColdMiss": true,
+        "currentHotHit": true,
+        "hotResultsValid": true,
+        "qualityMatchesCold": true
+      },
+      "quality": {
+        "pass": true,
+        "errors": []
+      },
+      "baseline": {
+        "cacheHits": 0,
+        "cacheMisses": 3,
+        "truncated": false,
+        "expectedSatisfied": 1,
+        "satisfiedExpectedTargetIds": [
+          "270"
+        ],
+        "enabledExpected": 1,
+        "satisfied": 3,
+        "targetProduction": {
+          "270": 1,
+          "383": 12,
+          "466": 0
+        },
+        "totalProduced": 13,
+        "demandCost": 74.27166666666666,
+        "valid": true,
+        "validationErrors": []
+      },
+      "current": {
+        "cacheHits": 0,
+        "cacheMisses": 3,
+        "truncated": false,
+        "expectedSatisfied": 1,
+        "satisfiedExpectedTargetIds": [
+          "270"
+        ],
+        "enabledExpected": 1,
+        "satisfied": 3,
+        "targetProduction": {
+          "270": 1,
+          "383": 12,
+          "466": 0
+        },
+        "totalProduced": 13,
+        "demandCost": 74.27166666666666,
+        "valid": true,
+        "validationErrors": []
+      }
+    },
+    {
+      "scenario": "trio-b",
+      "mode": "maximize",
+      "beamWidth": 120,
+      "cold": {
+        "baselineSamplesMs": [
+          58.984792,
+          59.217959,
+          59.015333,
+          59.004125,
+          59.543167,
+          61.345208,
+          60.417875
+        ],
+        "currentSamplesMs": [
+          19.893917,
+          19.009666,
+          19.976875,
+          19.647084,
+          19.69575,
+          20.269291,
+          20.105459
+        ],
+        "baselineMedianMs": 59.217959,
+        "currentMedianMs": 19.893917,
+        "ratio": 0.33594398280427057
+      },
+      "hot": {
+        "baselineSamplesMs": [
+          18.81664390909091,
+          17.974385416666667,
+          17.0269375,
+          17.425229166666664,
+          17.515215333333334,
+          17.091538166666666,
+          17.229677083333332
+        ],
+        "currentSamplesMs": [
+          1.0980530491803278,
+          0.9780201219512195,
+          0.9904674059405941,
+          0.9776884146341464,
+          0.9786128048780488,
+          0.9707429565217391,
+          0.976015243902439
+        ],
+        "baselineMedianMs": 17.425229166666664,
+        "currentMedianMs": 0.9780201219512195,
+        "ratio": 0.05612667199936221,
+        "baselineCalls": 83,
+        "currentCalls": 1412
+      },
+      "deterministic": {
+        "baseline": true,
+        "current": true
+      },
+      "cache": {
+        "baselineFillMisses": 3,
+        "baselineHotHits": 3,
+        "currentFillMisses": 3,
+        "currentHotHits": 3,
+        "currentColdMiss": true,
+        "currentHotHit": true,
+        "hotResultsValid": true,
+        "qualityMatchesCold": true
+      },
+      "quality": {
+        "pass": true,
+        "errors": []
+      },
+      "baseline": {
+        "cacheHits": 0,
+        "cacheMisses": 3,
+        "truncated": false,
+        "expectedSatisfied": 1,
+        "satisfiedExpectedTargetIds": [
+          "270"
+        ],
+        "enabledExpected": 1,
+        "satisfied": 3,
+        "targetProduction": {
+          "270": 1,
+          "383": 12,
+          "466": 0
+        },
+        "totalProduced": 13,
+        "demandCost": 74.225,
+        "valid": true,
+        "validationErrors": []
+      },
+      "current": {
+        "cacheHits": 0,
+        "cacheMisses": 3,
+        "truncated": false,
+        "expectedSatisfied": 1,
+        "satisfiedExpectedTargetIds": [
+          "270"
+        ],
+        "enabledExpected": 1,
+        "satisfied": 3,
+        "targetProduction": {
+          "270": 1,
+          "383": 12,
+          "466": 0
+        },
+        "totalProduced": 13,
+        "demandCost": 74.225,
+        "valid": true,
+        "validationErrors": []
+      }
+    },
+    {
+      "scenario": "trio-b",
+      "mode": "maximize",
+      "beamWidth": 300,
+      "cold": {
+        "baselineSamplesMs": [
+          81.653084,
+          81.163792,
+          82.325291,
+          82.030166,
+          83.446833,
+          80.711375,
+          80.526
+        ],
+        "currentSamplesMs": [
+          22.162375,
+          22.390583,
+          23.658167,
+          23.157916,
+          22.191834,
+          22.776834,
+          21.922167
+        ],
+        "baselineMedianMs": 81.653084,
+        "currentMedianMs": 22.390583,
+        "ratio": 0.2742160112409226
+      },
+      "hot": {
+        "baselineSamplesMs": [
+          29.64667857142857,
+          27.897015625,
+          27.261328125,
+          27.526854125,
+          26.596875,
+          26.613239625,
+          26.851552125
+        ],
+        "currentSamplesMs": [
+          1.6414603852459015,
+          1.4658327226277372,
+          1.4755447279411764,
+          1.472128676470588,
+          1.4583496376811595,
+          1.4752432573529413,
+          1.4684455620437957
+        ],
+        "baselineMedianMs": 27.261328125,
+        "currentMedianMs": 1.472128676470588,
+        "ratio": 0.0540006220430828,
+        "baselineCalls": 55,
+        "currentCalls": 942
+      },
+      "deterministic": {
+        "baseline": true,
+        "current": true
+      },
+      "cache": {
+        "baselineFillMisses": 3,
+        "baselineHotHits": 3,
+        "currentFillMisses": 3,
+        "currentHotHits": 3,
+        "currentColdMiss": true,
+        "currentHotHit": true,
+        "hotResultsValid": true,
+        "qualityMatchesCold": true
+      },
+      "quality": {
+        "pass": true,
+        "errors": []
+      },
+      "baseline": {
+        "cacheHits": 0,
+        "cacheMisses": 3,
+        "truncated": false,
+        "expectedSatisfied": 1,
+        "satisfiedExpectedTargetIds": [
+          "270"
+        ],
+        "enabledExpected": 1,
+        "satisfied": 3,
+        "targetProduction": {
+          "270": 1,
+          "383": 12,
+          "466": 0
+        },
+        "totalProduced": 13,
+        "demandCost": 74.225,
+        "valid": true,
+        "validationErrors": []
+      },
+      "current": {
+        "cacheHits": 0,
+        "cacheMisses": 3,
+        "truncated": false,
+        "expectedSatisfied": 1,
+        "satisfiedExpectedTargetIds": [
+          "270"
+        ],
+        "enabledExpected": 1,
+        "satisfied": 3,
+        "targetProduction": {
+          "270": 1,
+          "383": 12,
+          "466": 0
+        },
+        "totalProduced": 13,
+        "demandCost": 74.225,
+        "valid": true,
+        "validationErrors": []
+      }
+    },
+    {
+      "scenario": "single-deep",
+      "mode": "guarantee",
+      "beamWidth": 60,
+      "cold": {
+        "baselineSamplesMs": [
+          16.071375,
+          15.9945,
+          16.107208,
+          16.124125,
+          16.261958,
+          16.2015,
+          16.399916
+        ],
+        "currentSamplesMs": [
+          9.577917,
+          9.352833,
+          8.915541,
+          9.759917,
+          9.758833,
+          9.501042,
+          9.419833
+        ],
+        "baselineMedianMs": 16.124125,
+        "currentMedianMs": 9.501042,
+        "ratio": 0.5892438814509314
+      },
+      "hot": {
+        "baselineSamplesMs": [
+          1.304927487012987,
+          1.2636690251572327,
+          1.2265736768292683,
+          1.2653825974842767,
+          1.231626791411043,
+          1.234087680981595,
+          1.2130608545454546
+        ],
+        "currentSamplesMs": [
+          0.24831146650124067,
+          0.22853091780821919,
+          0.22801205466970387,
+          0.22829561003420754,
+          0.2339448350877193,
+          0.2284060593607306,
+          0.22741794431818182
+        ],
+        "baselineMedianMs": 1.234087680981595,
+        "currentMedianMs": 0.2284060593607306,
+        "ratio": 0.18508090055566886,
+        "baselineCalls": 1127,
+        "currentCalls": 6048
+      },
+      "deterministic": {
+        "baseline": true,
+        "current": true
+      },
+      "cache": {
+        "baselineFillMisses": 1,
+        "baselineHotHits": 1,
+        "currentFillMisses": 1,
+        "currentHotHits": 1,
+        "currentColdMiss": true,
+        "currentHotHit": true,
+        "hotResultsValid": true,
+        "qualityMatchesCold": true
+      },
+      "quality": {
+        "pass": true,
+        "errors": []
+      },
+      "baseline": {
+        "cacheHits": 0,
+        "cacheMisses": 1,
+        "truncated": false,
+        "expectedSatisfied": 0,
+        "satisfiedExpectedTargetIds": [],
+        "enabledExpected": 0,
+        "satisfied": 1,
+        "targetProduction": {
+          "115": 27
+        },
+        "totalProduced": 27,
+        "demandCost": 148.215,
+        "valid": true,
+        "validationErrors": []
+      },
+      "current": {
+        "cacheHits": 0,
+        "cacheMisses": 1,
+        "truncated": false,
+        "expectedSatisfied": 0,
+        "satisfiedExpectedTargetIds": [],
+        "enabledExpected": 0,
+        "satisfied": 1,
+        "targetProduction": {
+          "115": 27
+        },
+        "totalProduced": 27,
+        "demandCost": 148.215,
+        "valid": true,
+        "validationErrors": []
+      }
+    },
+    {
+      "scenario": "single-deep",
+      "mode": "guarantee",
+      "beamWidth": 120,
+      "cold": {
+        "baselineSamplesMs": [
+          32.242084,
+          32.725291,
+          32.359584,
+          32.521541,
+          32.546958,
+          32.231667,
+          33.010167
+        ],
+        "currentSamplesMs": [
+          14.028166,
+          16.271333,
+          13.092875,
+          15.382083,
+          13.3255,
+          13.237625,
+          13.372583
+        ],
+        "baselineMedianMs": 32.521541,
+        "currentMedianMs": 13.372583,
+        "ratio": 0.4111915545453397
+      },
+      "hot": {
+        "baselineSamplesMs": [
+          1.966577205882353,
+          1.8595374166666667,
+          1.8678117314814815,
+          1.8134804864864864,
+          1.8072777747747748,
+          1.810039045045045,
+          1.8433199541284404
+        ],
+        "currentSamplesMs": [
+          0.3328084442595674,
+          0.3090835910493827,
+          0.3117170950155763,
+          0.31335107042253524,
+          0.3088294104938272,
+          0.31052816434108527,
+          0.30971375232198145
+        ],
+        "baselineMedianMs": 1.8433199541284404,
+        "currentMedianMs": 0.31052816434108527,
+        "ratio": 0.16846134803977064,
+        "baselineCalls": 760,
+        "currentCalls": 4469
+      },
+      "deterministic": {
+        "baseline": true,
+        "current": true
+      },
+      "cache": {
+        "baselineFillMisses": 1,
+        "baselineHotHits": 1,
+        "currentFillMisses": 1,
+        "currentHotHits": 1,
+        "currentColdMiss": true,
+        "currentHotHit": true,
+        "hotResultsValid": true,
+        "qualityMatchesCold": true
+      },
+      "quality": {
+        "pass": true,
+        "errors": []
+      },
+      "baseline": {
+        "cacheHits": 0,
+        "cacheMisses": 1,
+        "truncated": false,
+        "expectedSatisfied": 0,
+        "satisfiedExpectedTargetIds": [],
+        "enabledExpected": 0,
+        "satisfied": 1,
+        "targetProduction": {
+          "115": 27
+        },
+        "totalProduced": 27,
+        "demandCost": 148.215,
+        "valid": true,
+        "validationErrors": []
+      },
+      "current": {
+        "cacheHits": 0,
+        "cacheMisses": 1,
+        "truncated": false,
+        "expectedSatisfied": 0,
+        "satisfiedExpectedTargetIds": [],
+        "enabledExpected": 0,
+        "satisfied": 1,
+        "targetProduction": {
+          "115": 27
+        },
+        "totalProduced": 27,
+        "demandCost": 148.215,
+        "valid": true,
+        "validationErrors": []
+      }
+    },
+    {
+      "scenario": "single-deep",
+      "mode": "guarantee",
+      "beamWidth": 300,
+      "cold": {
+        "baselineSamplesMs": [
+          50.617166,
+          49.074375,
+          49.389125,
+          49.706833,
+          49.701041,
+          49.358,
+          50.782625
+        ],
+        "currentSamplesMs": [
+          18.047709,
+          16.904,
+          16.315208,
+          16.740417,
+          16.979458,
+          16.69625,
+          17.358958
+        ],
+        "baselineMedianMs": 49.701041,
+        "currentMedianMs": 16.904,
+        "ratio": 0.3401136004374637
+      },
+      "hot": {
+        "baselineSamplesMs": [
+          3.031409727272727,
+          2.6779644533333333,
+          2.649533447368421,
+          2.587456730769231,
+          2.5984826883116883,
+          2.5648076923076926,
+          2.6609374999999997
+        ],
+        "currentSamplesMs": [
+          0.4319974816414687,
+          0.4055598846153846,
+          0.40928885480572597,
+          0.4036560826612903,
+          0.4033709677419355,
+          0.4033668508064516,
+          0.4028339195171026
+        ],
+        "baselineMedianMs": 2.649533447368421,
+        "currentMedianMs": 0.4036560826612903,
+        "ratio": 0.15234987241327755,
+        "baselineCalls": 526,
+        "currentCalls": 3431
+      },
+      "deterministic": {
+        "baseline": true,
+        "current": true
+      },
+      "cache": {
+        "baselineFillMisses": 1,
+        "baselineHotHits": 1,
+        "currentFillMisses": 1,
+        "currentHotHits": 1,
+        "currentColdMiss": true,
+        "currentHotHit": true,
+        "hotResultsValid": true,
+        "qualityMatchesCold": true
+      },
+      "quality": {
+        "pass": true,
+        "errors": []
+      },
+      "baseline": {
+        "cacheHits": 0,
+        "cacheMisses": 1,
+        "truncated": false,
+        "expectedSatisfied": 0,
+        "satisfiedExpectedTargetIds": [],
+        "enabledExpected": 0,
+        "satisfied": 1,
+        "targetProduction": {
+          "115": 28
+        },
+        "totalProduced": 28,
+        "demandCost": 156.50333333333333,
+        "valid": true,
+        "validationErrors": []
+      },
+      "current": {
+        "cacheHits": 0,
+        "cacheMisses": 1,
+        "truncated": false,
+        "expectedSatisfied": 0,
+        "satisfiedExpectedTargetIds": [],
+        "enabledExpected": 0,
+        "satisfied": 1,
+        "targetProduction": {
+          "115": 28
+        },
+        "totalProduced": 28,
+        "demandCost": 156.50333333333333,
+        "valid": true,
+        "validationErrors": []
+      }
+    },
+    {
+      "scenario": "single-deep",
+      "mode": "maximize",
+      "beamWidth": 60,
+      "cold": {
+        "baselineSamplesMs": [
+          16.5535,
+          16.848792,
+          16.651167,
+          16.240292,
+          16.58325,
+          16.558709,
+          16.306041
+        ],
+        "currentSamplesMs": [
+          9.832834,
+          9.692375,
+          10.154958,
+          8.957209,
+          9.440459,
+          9.825125,
+          9.539291
+        ],
+        "baselineMedianMs": 16.558709,
+        "currentMedianMs": 9.692375,
+        "ratio": 0.585333977425414
+      },
+      "hot": {
+        "baselineSamplesMs": [
+          1.4148321549295775,
+          1.344033,
+          1.364072850340136,
+          1.3214046052631578,
+          1.3293509933774834,
+          1.3256112052980134,
+          1.3026877727272725
+        ],
+        "currentSamplesMs": [
+          0.2465278115763547,
+          0.22610183615819207,
+          0.22960865825688073,
+          0.22507630258717662,
+          0.2250176231721035,
+          0.22802254214123005,
+          0.22401455767077266
+        ],
+        "baselineMedianMs": 1.3293509933774834,
+        "currentMedianMs": 0.22610183615819207,
+        "ratio": 0.17008437747786603,
+        "baselineCalls": 1046,
+        "currentCalls": 6118
+      },
+      "deterministic": {
+        "baseline": true,
+        "current": true
+      },
+      "cache": {
+        "baselineFillMisses": 1,
+        "baselineHotHits": 1,
+        "currentFillMisses": 1,
+        "currentHotHits": 1,
+        "currentColdMiss": true,
+        "currentHotHit": true,
+        "hotResultsValid": true,
+        "qualityMatchesCold": true
+      },
+      "quality": {
+        "pass": true,
+        "errors": []
+      },
+      "baseline": {
+        "cacheHits": 0,
+        "cacheMisses": 1,
+        "truncated": false,
+        "expectedSatisfied": 0,
+        "satisfiedExpectedTargetIds": [],
+        "enabledExpected": 0,
+        "satisfied": 1,
+        "targetProduction": {
+          "115": 27
+        },
+        "totalProduced": 27,
+        "demandCost": 148.215,
+        "valid": true,
+        "validationErrors": []
+      },
+      "current": {
+        "cacheHits": 0,
+        "cacheMisses": 1,
+        "truncated": false,
+        "expectedSatisfied": 0,
+        "satisfiedExpectedTargetIds": [],
+        "enabledExpected": 0,
+        "satisfied": 1,
+        "targetProduction": {
+          "115": 27
+        },
+        "totalProduced": 27,
+        "demandCost": 148.215,
+        "valid": true,
+        "validationErrors": []
+      }
+    },
+    {
+      "scenario": "single-deep",
+      "mode": "maximize",
+      "beamWidth": 120,
+      "cold": {
+        "baselineSamplesMs": [
+          32.662083,
+          32.851125,
+          32.8055,
+          32.278125,
+          32.836416,
+          32.91,
+          32.981084
+        ],
+        "currentSamplesMs": [
+          13.239709,
+          13.324125,
+          13.474625,
+          13.563875,
+          13.378208,
+          12.96225,
+          13.389667
+        ],
+        "baselineMedianMs": 32.836416,
+        "currentMedianMs": 13.378208,
+        "ratio": 0.407419859706979
+      },
+      "hot": {
+        "baselineSamplesMs": [
+          2.0667942474226804,
+          1.9766879117647058,
+          1.9129015904761906,
+          1.8896572264150944,
+          1.8818228130841121,
+          1.8845003925233643,
+          1.8737920560747663
+        ],
+        "currentSamplesMs": [
+          0.3390556491525424,
+          0.3096661517027864,
+          0.31408980847723705,
+          0.31520833385826774,
+          0.3106618136645963,
+          0.3100645634674922,
+          0.31175058411214956
+        ],
+        "baselineMedianMs": 1.8896572264150944,
+        "currentMedianMs": 0.31175058411214956,
+        "ratio": 0.1649773195658229,
+        "baselineCalls": 731,
+        "currentCalls": 4440
+      },
+      "deterministic": {
+        "baseline": true,
+        "current": true
+      },
+      "cache": {
+        "baselineFillMisses": 1,
+        "baselineHotHits": 1,
+        "currentFillMisses": 1,
+        "currentHotHits": 1,
+        "currentColdMiss": true,
+        "currentHotHit": true,
+        "hotResultsValid": true,
+        "qualityMatchesCold": true
+      },
+      "quality": {
+        "pass": true,
+        "errors": []
+      },
+      "baseline": {
+        "cacheHits": 0,
+        "cacheMisses": 1,
+        "truncated": false,
+        "expectedSatisfied": 0,
+        "satisfiedExpectedTargetIds": [],
+        "enabledExpected": 0,
+        "satisfied": 1,
+        "targetProduction": {
+          "115": 27
+        },
+        "totalProduced": 27,
+        "demandCost": 148.215,
+        "valid": true,
+        "validationErrors": []
+      },
+      "current": {
+        "cacheHits": 0,
+        "cacheMisses": 1,
+        "truncated": false,
+        "expectedSatisfied": 0,
+        "satisfiedExpectedTargetIds": [],
+        "enabledExpected": 0,
+        "satisfied": 1,
+        "targetProduction": {
+          "115": 27
+        },
+        "totalProduced": 27,
+        "demandCost": 148.215,
+        "valid": true,
+        "validationErrors": []
+      }
+    },
+    {
+      "scenario": "single-deep",
+      "mode": "maximize",
+      "beamWidth": 300,
+      "cold": {
+        "baselineSamplesMs": [
+          49.4565,
+          49.7495,
+          50.091584,
+          50.211084,
+          49.958333,
+          51.015333,
+          50.241917
+        ],
+        "currentSamplesMs": [
+          18.416625,
+          16.7095,
+          17.301291,
+          17.030709,
+          17.423125,
+          18.250959,
+          16.606541
+        ],
+        "baselineMedianMs": 50.091584,
+        "currentMedianMs": 17.301291,
+        "ratio": 0.3453931702379386
+      },
+      "hot": {
+        "baselineSamplesMs": [
+          3.15976953125,
+          2.6201065974025974,
+          2.7428704246575344,
+          2.6898683333333335,
+          2.7058541756756753,
+          2.6416184210526317,
+          2.724081081081081
+        ],
+        "currentSamplesMs": [
+          0.42828979229122055,
+          0.40609567342799185,
+          0.41214429012345677,
+          0.4050398097165992,
+          0.4081363706720978,
+          0.40174615060240965,
+          0.400399418
+        ],
+        "baselineMedianMs": 2.7058541756756753,
+        "currentMedianMs": 0.40609567342799185,
+        "ratio": 0.15008039866988998,
+        "baselineCalls": 513,
+        "currentCalls": 3429
+      },
+      "deterministic": {
+        "baseline": true,
+        "current": true
+      },
+      "cache": {
+        "baselineFillMisses": 1,
+        "baselineHotHits": 1,
+        "currentFillMisses": 1,
+        "currentHotHits": 1,
+        "currentColdMiss": true,
+        "currentHotHit": true,
+        "hotResultsValid": true,
+        "qualityMatchesCold": true
+      },
+      "quality": {
+        "pass": true,
+        "errors": []
+      },
+      "baseline": {
+        "cacheHits": 0,
+        "cacheMisses": 1,
+        "truncated": false,
+        "expectedSatisfied": 0,
+        "satisfiedExpectedTargetIds": [],
+        "enabledExpected": 0,
+        "satisfied": 1,
+        "targetProduction": {
+          "115": 28
+        },
+        "totalProduced": 28,
+        "demandCost": 156.50333333333333,
+        "valid": true,
+        "validationErrors": []
+      },
+      "current": {
+        "cacheHits": 0,
+        "cacheMisses": 1,
+        "truncated": false,
+        "expectedSatisfied": 0,
+        "satisfiedExpectedTargetIds": [],
+        "enabledExpected": 0,
+        "satisfied": 1,
+        "targetProduction": {
+          "115": 28
+        },
+        "totalProduced": 28,
+        "demandCost": 156.50333333333333,
+        "valid": true,
+        "validationErrors": []
+      }
+    },
+    {
+      "scenario": "empty-inventory",
+      "mode": "guarantee",
+      "beamWidth": 60,
+      "cold": {
+        "baselineSamplesMs": [
+          2.164583,
+          2.174375,
+          2.186875,
+          2.157417,
+          2.169375,
+          2.136,
+          2.195
+        ],
+        "currentSamplesMs": [
+          0.654166,
+          0.646625,
+          0.648333,
+          0.631833,
+          0.680041,
+          0.673167,
+          0.651
+        ],
+        "baselineMedianMs": 2.169375,
+        "currentMedianMs": 0.651,
+        "ratio": 0.3000864304235091
+      },
+      "hot": {
+        "baselineSamplesMs": [
+          0.0025652378472667573,
+          0.002210409732430013,
+          0.0021590963813800847,
+          0.0021512097858471997,
+          0.0021589004965457685,
+          0.0021552939274745407,
+          0.0021569586406971226
+        ],
+        "currentSamplesMs": [
+          0.0018001502313189682,
+          0.0015049651150541032,
+          0.001499889383849292,
+          0.001463017424508427,
+          0.0014667183684245264,
+          0.001461436399374516,
+          0.0014619461711645858
+        ],
+        "baselineMedianMs": 0.0021589004965457685,
+        "currentMedianMs": 0.0014667183684245264,
+        "ratio": 0.6793821071287304,
+        "baselineCalls": 632209,
+        "currentCalls": 924061
+      },
+      "deterministic": {
+        "baseline": true,
+        "current": true
+      },
+      "cache": {
+        "baselineFillMisses": 1,
+        "baselineHotHits": 1,
+        "currentFillMisses": 1,
+        "currentHotHits": 1,
+        "currentColdMiss": true,
+        "currentHotHit": true,
+        "hotResultsValid": true,
+        "qualityMatchesCold": true
+      },
+      "quality": {
+        "pass": true,
+        "errors": []
+      },
+      "baseline": {
+        "cacheHits": 0,
+        "cacheMisses": 1,
+        "truncated": false,
+        "expectedSatisfied": 0,
+        "satisfiedExpectedTargetIds": [],
+        "enabledExpected": 1,
+        "satisfied": 0,
+        "targetProduction": {
+          "110": 0
+        },
+        "totalProduced": 0,
+        "demandCost": 0,
+        "valid": true,
+        "validationErrors": []
+      },
+      "current": {
+        "cacheHits": 0,
+        "cacheMisses": 1,
+        "truncated": false,
+        "expectedSatisfied": 0,
+        "satisfiedExpectedTargetIds": [],
+        "enabledExpected": 1,
+        "satisfied": 0,
+        "targetProduction": {
+          "110": 0
+        },
+        "totalProduced": 0,
+        "demandCost": 0,
+        "valid": true,
+        "validationErrors": []
+      }
+    },
+    {
+      "scenario": "empty-inventory",
+      "mode": "guarantee",
+      "beamWidth": 120,
+      "cold": {
+        "baselineSamplesMs": [
+          2.352084,
+          2.284417,
+          2.30275,
+          2.30775,
+          2.383834,
+          2.2645,
+          2.245292
+        ],
+        "currentSamplesMs": [
+          0.668041,
+          0.960875,
+          0.659166,
+          0.667292,
+          0.653875,
+          0.6425,
+          0.621208
+        ],
+        "baselineMedianMs": 2.30275,
+        "currentMedianMs": 0.659166,
+        "ratio": 0.28625165562913907
+      },
+      "hot": {
+        "baselineSamplesMs": [
+          0.002594831584000415,
+          0.0022188725037720776,
+          0.0021560360811961666,
+          0.002142187836723327,
+          0.0021576011909899026,
+          0.002134418940695602,
+          0.0021348576064215874
+        ],
+        "currentSamplesMs": [
+          0.0018059213793601631,
+          0.001514558658710205,
+          0.0014909549286954967,
+          0.001473514204671038,
+          0.0014747518157753085,
+          0.0014730257335611595,
+          0.0014794933866934948
+        ],
+        "baselineMedianMs": 0.0021560360811961666,
+        "currentMedianMs": 0.0014794933866934948,
+        "ratio": 0.6862099385056086,
+        "baselineCalls": 633422,
+        "currentCalls": 919247
+      },
+      "deterministic": {
+        "baseline": true,
+        "current": true
+      },
+      "cache": {
+        "baselineFillMisses": 1,
+        "baselineHotHits": 1,
+        "currentFillMisses": 1,
+        "currentHotHits": 1,
+        "currentColdMiss": true,
+        "currentHotHit": true,
+        "hotResultsValid": true,
+        "qualityMatchesCold": true
+      },
+      "quality": {
+        "pass": true,
+        "errors": []
+      },
+      "baseline": {
+        "cacheHits": 0,
+        "cacheMisses": 1,
+        "truncated": false,
+        "expectedSatisfied": 0,
+        "satisfiedExpectedTargetIds": [],
+        "enabledExpected": 1,
+        "satisfied": 0,
+        "targetProduction": {
+          "110": 0
+        },
+        "totalProduced": 0,
+        "demandCost": 0,
+        "valid": true,
+        "validationErrors": []
+      },
+      "current": {
+        "cacheHits": 0,
+        "cacheMisses": 1,
+        "truncated": false,
+        "expectedSatisfied": 0,
+        "satisfiedExpectedTargetIds": [],
+        "enabledExpected": 1,
+        "satisfied": 0,
+        "targetProduction": {
+          "110": 0
+        },
+        "totalProduced": 0,
+        "demandCost": 0,
+        "valid": true,
+        "validationErrors": []
+      }
+    },
+    {
+      "scenario": "empty-inventory",
+      "mode": "guarantee",
+      "beamWidth": 300,
+      "cold": {
+        "baselineSamplesMs": [
+          2.322709,
+          2.389917,
+          2.418792,
+          2.3885,
+          2.442584,
+          2.358791,
+          2.415209
+        ],
+        "currentSamplesMs": [
+          1.014042,
+          0.679334,
+          0.662375,
+          0.691042,
+          0.656167,
+          0.665875,
+          0.64775
+        ],
+        "baselineMedianMs": 2.389917,
+        "currentMedianMs": 0.665875,
+        "ratio": 0.27861846248216987
+      },
+      "hot": {
+        "baselineSamplesMs": [
+          0.002607530658009674,
+          0.0022170856898979037,
+          0.0021527555029331037,
+          0.0021489468351438184,
+          0.002148731636566787,
+          0.002147307365256603,
+          0.0021441434957867878
+        ],
+        "currentSamplesMs": [
+          0.0017967597114417133,
+          0.0015167052136654913,
+          0.0014607413017440332,
+          0.0014570693272719325,
+          0.0014622185569422206,
+          0.0014582400621208586,
+          0.0014547718851606428
+        ],
+        "baselineMedianMs": 0.0021489468351438184,
+        "currentMedianMs": 0.0014607413017440332,
+        "ratio": 0.6797475292804408,
+        "baselineCalls": 632381,
+        "currentCalls": 928773
+      },
+      "deterministic": {
+        "baseline": true,
+        "current": true
+      },
+      "cache": {
+        "baselineFillMisses": 1,
+        "baselineHotHits": 1,
+        "currentFillMisses": 1,
+        "currentHotHits": 1,
+        "currentColdMiss": true,
+        "currentHotHit": true,
+        "hotResultsValid": true,
+        "qualityMatchesCold": true
+      },
+      "quality": {
+        "pass": true,
+        "errors": []
+      },
+      "baseline": {
+        "cacheHits": 0,
+        "cacheMisses": 1,
+        "truncated": false,
+        "expectedSatisfied": 0,
+        "satisfiedExpectedTargetIds": [],
+        "enabledExpected": 1,
+        "satisfied": 0,
+        "targetProduction": {
+          "110": 0
+        },
+        "totalProduced": 0,
+        "demandCost": 0,
+        "valid": true,
+        "validationErrors": []
+      },
+      "current": {
+        "cacheHits": 0,
+        "cacheMisses": 1,
+        "truncated": false,
+        "expectedSatisfied": 0,
+        "satisfiedExpectedTargetIds": [],
+        "enabledExpected": 1,
+        "satisfied": 0,
+        "targetProduction": {
+          "110": 0
+        },
+        "totalProduced": 0,
+        "demandCost": 0,
+        "valid": true,
+        "validationErrors": []
+      }
+    },
+    {
+      "scenario": "empty-inventory",
+      "mode": "maximize",
+      "beamWidth": 60,
+      "cold": {
+        "baselineSamplesMs": [
+          2.199333,
+          2.259959,
+          2.195542,
+          2.23225,
+          2.127791,
+          2.307458,
+          2.165667
+        ],
+        "currentSamplesMs": [
+          0.64675,
+          0.630375,
+          0.646375,
+          0.643625,
+          0.649542,
+          0.627458,
+          0.693667
+        ],
+        "baselineMedianMs": 2.199333,
+        "currentMedianMs": 0.646375,
+        "ratio": 0.2938959220818312
+      },
+      "hot": {
+        "baselineSamplesMs": [
+          0.0026812839714714714,
+          0.0022152304701777703,
+          0.0021433901147774647,
+          0.002142783676355572,
+          0.0021322482888760956,
+          0.0021371383783552744,
+          0.002137099075706577
+        ],
+        "currentSamplesMs": [
+          0.0018196173098968284,
+          0.0015020011039682778,
+          0.0014487663800534594,
+          0.0014394863357300685,
+          0.0014385039486744249,
+          0.0014376594903497107,
+          0.0014390255139117734
+        ],
+        "baselineMedianMs": 0.002142783676355572,
+        "currentMedianMs": 0.0014394863357300685,
+        "ratio": 0.6717833216735786,
+        "baselineCalls": 632492,
+        "currentCalls": 937190
+      },
+      "deterministic": {
+        "baseline": true,
+        "current": true
+      },
+      "cache": {
+        "baselineFillMisses": 1,
+        "baselineHotHits": 1,
+        "currentFillMisses": 1,
+        "currentHotHits": 1,
+        "currentColdMiss": true,
+        "currentHotHit": true,
+        "hotResultsValid": true,
+        "qualityMatchesCold": true
+      },
+      "quality": {
+        "pass": true,
+        "errors": []
+      },
+      "baseline": {
+        "cacheHits": 0,
+        "cacheMisses": 1,
+        "truncated": false,
+        "expectedSatisfied": 0,
+        "satisfiedExpectedTargetIds": [],
+        "enabledExpected": 1,
+        "satisfied": 0,
+        "targetProduction": {
+          "110": 0
+        },
+        "totalProduced": 0,
+        "demandCost": 0,
+        "valid": true,
+        "validationErrors": []
+      },
+      "current": {
+        "cacheHits": 0,
+        "cacheMisses": 1,
+        "truncated": false,
+        "expectedSatisfied": 0,
+        "satisfiedExpectedTargetIds": [],
+        "enabledExpected": 1,
+        "satisfied": 0,
+        "targetProduction": {
+          "110": 0
+        },
+        "totalProduced": 0,
+        "demandCost": 0,
+        "valid": true,
+        "validationErrors": []
+      }
+    },
+    {
+      "scenario": "empty-inventory",
+      "mode": "maximize",
+      "beamWidth": 120,
+      "cold": {
+        "baselineSamplesMs": [
+          2.264625,
+          2.355458,
+          2.316917,
+          2.264125,
+          2.317208,
+          2.305709,
+          2.297875
+        ],
+        "currentSamplesMs": [
+          0.6525,
+          0.909208,
+          0.646708,
+          0.655792,
+          0.67625,
+          0.643916,
+          0.623334
+        ],
+        "baselineMedianMs": 2.305709,
+        "currentMedianMs": 0.6525,
+        "ratio": 0.28299321380104775
+      },
+      "hot": {
+        "baselineSamplesMs": [
+          0.0025768675754374213,
+          0.0022222128087465696,
+          0.002165601024319466,
+          0.0021872343503937007,
+          0.002173445990002173,
+          0.00215928466704094,
+          0.002243205957895445
+        ],
+        "currentSamplesMs": [
+          0.0018510956083113517,
+          0.0014969901273933026,
+          0.0014586606156965422,
+          0.0015439381884992166,
+          0.001465776396696153,
+          0.0014554206872462122,
+          0.001457342043326508
+        ],
+        "baselineMedianMs": 0.0021872343503937007,
+        "currentMedianMs": 0.001465776396696153,
+        "ratio": 0.6701505928856294,
+        "baselineCalls": 625212,
+        "currentCalls": 919401
+      },
+      "deterministic": {
+        "baseline": true,
+        "current": true
+      },
+      "cache": {
+        "baselineFillMisses": 1,
+        "baselineHotHits": 1,
+        "currentFillMisses": 1,
+        "currentHotHits": 1,
+        "currentColdMiss": true,
+        "currentHotHit": true,
+        "hotResultsValid": true,
+        "qualityMatchesCold": true
+      },
+      "quality": {
+        "pass": true,
+        "errors": []
+      },
+      "baseline": {
+        "cacheHits": 0,
+        "cacheMisses": 1,
+        "truncated": false,
+        "expectedSatisfied": 0,
+        "satisfiedExpectedTargetIds": [],
+        "enabledExpected": 1,
+        "satisfied": 0,
+        "targetProduction": {
+          "110": 0
+        },
+        "totalProduced": 0,
+        "demandCost": 0,
+        "valid": true,
+        "validationErrors": []
+      },
+      "current": {
+        "cacheHits": 0,
+        "cacheMisses": 1,
+        "truncated": false,
+        "expectedSatisfied": 0,
+        "satisfiedExpectedTargetIds": [],
+        "enabledExpected": 1,
+        "satisfied": 0,
+        "targetProduction": {
+          "110": 0
+        },
+        "totalProduced": 0,
+        "demandCost": 0,
+        "valid": true,
+        "validationErrors": []
+      }
+    },
+    {
+      "scenario": "empty-inventory",
+      "mode": "maximize",
+      "beamWidth": 300,
+      "cold": {
+        "baselineSamplesMs": [
+          2.366833,
+          2.315167,
+          2.383625,
+          2.353333,
+          2.424041,
+          2.353917,
+          2.444083
+        ],
+        "currentSamplesMs": [
+          0.637667,
+          0.649541,
+          0.647709,
+          0.689167,
+          0.644,
+          0.63375,
+          0.636959
+        ],
+        "baselineMedianMs": 2.366833,
+        "currentMedianMs": 0.644,
+        "ratio": 0.2720935528615665
+      },
+      "hot": {
+        "baselineSamplesMs": [
+          0.0025832321532361186,
+          0.002244344730847351,
+          0.0021717870584530515,
+          0.0021590837939373,
+          0.002156760427899754,
+          0.0021612361357250917,
+          0.002176708082105309
+        ],
+        "currentSamplesMs": [
+          0.0018470507291214525,
+          0.0015059547538909845,
+          0.001465167687393776,
+          0.0014630045792033942,
+          0.0014674292370114386,
+          0.0014609175699760416,
+          0.0014625209907057353
+        ],
+        "baselineMedianMs": 0.0021717870584530515,
+        "currentMedianMs": 0.001465167687393776,
+        "ratio": 0.6746368994561578,
+        "baselineCalls": 628413,
+        "currentCalls": 924245
+      },
+      "deterministic": {
+        "baseline": true,
+        "current": true
+      },
+      "cache": {
+        "baselineFillMisses": 1,
+        "baselineHotHits": 1,
+        "currentFillMisses": 1,
+        "currentHotHits": 1,
+        "currentColdMiss": true,
+        "currentHotHit": true,
+        "hotResultsValid": true,
+        "qualityMatchesCold": true
+      },
+      "quality": {
+        "pass": true,
+        "errors": []
+      },
+      "baseline": {
+        "cacheHits": 0,
+        "cacheMisses": 1,
+        "truncated": false,
+        "expectedSatisfied": 0,
+        "satisfiedExpectedTargetIds": [],
+        "enabledExpected": 1,
+        "satisfied": 0,
+        "targetProduction": {
+          "110": 0
+        },
+        "totalProduced": 0,
+        "demandCost": 0,
+        "valid": true,
+        "validationErrors": []
+      },
+      "current": {
+        "cacheHits": 0,
+        "cacheMisses": 1,
+        "truncated": false,
+        "expectedSatisfied": 0,
+        "satisfiedExpectedTargetIds": [],
+        "enabledExpected": 1,
+        "satisfied": 0,
+        "targetProduction": {
+          "110": 0
+        },
+        "totalProduced": 0,
+        "demandCost": 0,
+        "valid": true,
+        "validationErrors": []
+      }
+    },
+    {
+      "scenario": "no-enabled-targets",
+      "mode": "guarantee",
+      "beamWidth": 60,
+      "cold": {
+        "baselineSamplesMs": [
+          0.206417,
+          0.208875,
+          0.200208,
+          0.209167,
+          0.206375,
+          0.204209,
+          0.20575
+        ],
+        "currentSamplesMs": [
+          0.19775,
+          0.197583,
+          0.192875,
+          0.209625,
+          0.210875,
+          0.19475,
+          0.191291
+        ],
+        "baselineMedianMs": 0.206375,
+        "currentMedianMs": 0.197583,
+        "ratio": 0.9573979406420352
+      },
+      "hot": {
+        "baselineSamplesMs": [
+          0.0035459675549172915,
+          0.0033478824907934384,
+          0.0033522087893669444,
+          0.0033280722189866045,
+          0.0033497491876863295,
+          0.0033304698428029043,
+          0.003381922368020562
+        ],
+        "currentSamplesMs": [
+          0.0034482609437768313,
+          0.0032674726351903287,
+          0.0032703009042005264,
+          0.0033156498673740055,
+          0.0032689125247209196,
+          0.003248837185880671,
+          0.003281370838870568
+        ],
+        "baselineMedianMs": 0.0033497491876863295,
+        "currentMedianMs": 0.0032703009042005264,
+        "ratio": 0.976282318754534,
+        "baselineCalls": 414797,
+        "currentCalls": 424385
+      },
+      "deterministic": {
+        "baseline": true,
+        "current": true
+      },
+      "cache": {
+        "baselineFillMisses": 0,
+        "baselineHotHits": 0,
+        "currentFillMisses": 0,
+        "currentHotHits": 0,
+        "currentColdMiss": true,
+        "currentHotHit": true,
+        "hotResultsValid": true,
+        "qualityMatchesCold": true
+      },
+      "quality": {
+        "pass": true,
+        "errors": []
+      },
+      "baseline": {
+        "cacheHits": 0,
+        "cacheMisses": 0,
+        "truncated": false,
+        "expectedSatisfied": 0,
+        "satisfiedExpectedTargetIds": [],
+        "enabledExpected": 0,
+        "satisfied": 0,
+        "targetProduction": {},
+        "totalProduced": 0,
+        "demandCost": 0,
+        "valid": true,
+        "validationErrors": []
+      },
+      "current": {
+        "cacheHits": 0,
+        "cacheMisses": 0,
+        "truncated": false,
+        "expectedSatisfied": 0,
+        "satisfiedExpectedTargetIds": [],
+        "enabledExpected": 0,
+        "satisfied": 0,
+        "targetProduction": {},
+        "totalProduced": 0,
+        "demandCost": 0,
+        "valid": true,
+        "validationErrors": []
+      }
+    },
+    {
+      "scenario": "no-enabled-targets",
+      "mode": "guarantee",
+      "beamWidth": 120,
+      "cold": {
+        "baselineSamplesMs": [
+          0.218208,
+          0.201625,
+          0.204459,
+          0.20325,
+          0.212583,
+          0.20225,
+          0.199625
+        ],
+        "currentSamplesMs": [
+          0.187,
+          0.193541,
+          0.201,
+          0.203209,
+          0.201125,
+          0.198792,
+          0.194875
+        ],
+        "baselineMedianMs": 0.20325,
+        "currentMedianMs": 0.198792,
+        "ratio": 0.9780664206642067
+      },
+      "hot": {
+        "baselineSamplesMs": [
+          0.0035082823238436036,
+          0.00330078503762873,
+          0.0033100684849889112,
+          0.0033020680215952057,
+          0.0032936504125290252,
+          0.003309052067305306,
+          0.003357954450059603
+        ],
+        "currentSamplesMs": [
+          0.0034501666062895686,
+          0.0032549997233298072,
+          0.0032530076607787646,
+          0.003239194642394403,
+          0.0032394913749817784,
+          0.0032482757259793414,
+          0.0033500935343383585
+        ],
+        "baselineMedianMs": 0.003309052067305306,
+        "currentMedianMs": 0.0032530076607787646,
+        "ratio": 0.9830633047209255,
+        "baselineCalls": 419317,
+        "currentCalls": 425651
+      },
+      "deterministic": {
+        "baseline": true,
+        "current": true
+      },
+      "cache": {
+        "baselineFillMisses": 0,
+        "baselineHotHits": 0,
+        "currentFillMisses": 0,
+        "currentHotHits": 0,
+        "currentColdMiss": true,
+        "currentHotHit": true,
+        "hotResultsValid": true,
+        "qualityMatchesCold": true
+      },
+      "quality": {
+        "pass": true,
+        "errors": []
+      },
+      "baseline": {
+        "cacheHits": 0,
+        "cacheMisses": 0,
+        "truncated": false,
+        "expectedSatisfied": 0,
+        "satisfiedExpectedTargetIds": [],
+        "enabledExpected": 0,
+        "satisfied": 0,
+        "targetProduction": {},
+        "totalProduced": 0,
+        "demandCost": 0,
+        "valid": true,
+        "validationErrors": []
+      },
+      "current": {
+        "cacheHits": 0,
+        "cacheMisses": 0,
+        "truncated": false,
+        "expectedSatisfied": 0,
+        "satisfiedExpectedTargetIds": [],
+        "enabledExpected": 0,
+        "satisfied": 0,
+        "targetProduction": {},
+        "totalProduced": 0,
+        "demandCost": 0,
+        "valid": true,
+        "validationErrors": []
+      }
+    },
+    {
+      "scenario": "no-enabled-targets",
+      "mode": "guarantee",
+      "beamWidth": 300,
+      "cold": {
+        "baselineSamplesMs": [
+          0.202,
+          0.20525,
+          0.217083,
+          0.20675,
+          0.206417,
+          0.22075,
+          0.204833
+        ],
+        "currentSamplesMs": [
+          0.208792,
+          0.194166,
+          0.199625,
+          0.201792,
+          0.195791,
+          0.193125,
+          0.1955
+        ],
+        "baselineMedianMs": 0.206417,
+        "currentMedianMs": 0.195791,
+        "ratio": 0.9485216818382207
+      },
+      "hot": {
+        "baselineSamplesMs": [
+          0.0035285844565984474,
+          0.0033123571546869826,
+          0.00329539251289318,
+          0.0032917571842391124,
+          0.0032859949560502754,
+          0.0033223260851509163,
+          0.0033493934821563144
+        ],
+        "currentSamplesMs": [
+          0.0034789883801836902,
+          0.0032902148814713673,
+          0.0032995559514971545,
+          0.003285449691991786,
+          0.003288233891784358,
+          0.003282676935955093,
+          0.0033159551189587996
+        ],
+        "baselineMedianMs": 0.0033123571546869826,
+        "currentMedianMs": 0.0032902148814713673,
+        "ratio": 0.9933152518941734,
+        "baselineCalls": 419286,
+        "currentCalls": 421829
+      },
+      "deterministic": {
+        "baseline": true,
+        "current": true
+      },
+      "cache": {
+        "baselineFillMisses": 0,
+        "baselineHotHits": 0,
+        "currentFillMisses": 0,
+        "currentHotHits": 0,
+        "currentColdMiss": true,
+        "currentHotHit": true,
+        "hotResultsValid": true,
+        "qualityMatchesCold": true
+      },
+      "quality": {
+        "pass": true,
+        "errors": []
+      },
+      "baseline": {
+        "cacheHits": 0,
+        "cacheMisses": 0,
+        "truncated": false,
+        "expectedSatisfied": 0,
+        "satisfiedExpectedTargetIds": [],
+        "enabledExpected": 0,
+        "satisfied": 0,
+        "targetProduction": {},
+        "totalProduced": 0,
+        "demandCost": 0,
+        "valid": true,
+        "validationErrors": []
+      },
+      "current": {
+        "cacheHits": 0,
+        "cacheMisses": 0,
+        "truncated": false,
+        "expectedSatisfied": 0,
+        "satisfiedExpectedTargetIds": [],
+        "enabledExpected": 0,
+        "satisfied": 0,
+        "targetProduction": {},
+        "totalProduced": 0,
+        "demandCost": 0,
+        "valid": true,
+        "validationErrors": []
+      }
+    },
+    {
+      "scenario": "no-enabled-targets",
+      "mode": "maximize",
+      "beamWidth": 60,
+      "cold": {
+        "baselineSamplesMs": [
+          0.197459,
+          0.205417,
+          0.2155,
+          0.214208,
+          0.210958,
+          0.203,
+          0.206625
+        ],
+        "currentSamplesMs": [
+          0.199417,
+          0.211667,
+          0.202375,
+          0.213375,
+          0.194833,
+          0.210416,
+          0.200917
+        ],
+        "baselineMedianMs": 0.206625,
+        "currentMedianMs": 0.202375,
+        "ratio": 0.9794313369630974
+      },
+      "hot": {
+        "baselineSamplesMs": [
+          0.003516009475590247,
+          0.003309511103388933,
+          0.00329855647914502,
+          0.003293901002980945,
+          0.0032975754727869286,
+          0.0033394633327767575,
+          0.0033273552106208824
+        ],
+        "currentSamplesMs": [
+          0.003478009147030693,
+          0.003299377528126959,
+          0.0033039987940462227,
+          0.003279669263061231,
+          0.0032734121344048183,
+          0.0032728683009049402,
+          0.003324590378669504
+        ],
+        "baselineMedianMs": 0.003309511103388933,
+        "currentMedianMs": 0.003299377528126959,
+        "ratio": 0.9969380446400081,
+        "baselineCalls": 419316,
+        "currentCalls": 422004
+      },
+      "deterministic": {
+        "baseline": true,
+        "current": true
+      },
+      "cache": {
+        "baselineFillMisses": 0,
+        "baselineHotHits": 0,
+        "currentFillMisses": 0,
+        "currentHotHits": 0,
+        "currentColdMiss": true,
+        "currentHotHit": true,
+        "hotResultsValid": true,
+        "qualityMatchesCold": true
+      },
+      "quality": {
+        "pass": true,
+        "errors": []
+      },
+      "baseline": {
+        "cacheHits": 0,
+        "cacheMisses": 0,
+        "truncated": false,
+        "expectedSatisfied": 0,
+        "satisfiedExpectedTargetIds": [],
+        "enabledExpected": 0,
+        "satisfied": 0,
+        "targetProduction": {},
+        "totalProduced": 0,
+        "demandCost": 0,
+        "valid": true,
+        "validationErrors": []
+      },
+      "current": {
+        "cacheHits": 0,
+        "cacheMisses": 0,
+        "truncated": false,
+        "expectedSatisfied": 0,
+        "satisfiedExpectedTargetIds": [],
+        "enabledExpected": 0,
+        "satisfied": 0,
+        "targetProduction": {},
+        "totalProduced": 0,
+        "demandCost": 0,
+        "valid": true,
+        "validationErrors": []
+      }
+    },
+    {
+      "scenario": "no-enabled-targets",
+      "mode": "maximize",
+      "beamWidth": 120,
+      "cold": {
+        "baselineSamplesMs": [
+          0.207708,
+          0.240959,
+          0.1995,
+          0.217084,
+          0.204292,
+          0.218917,
+          0.216916
+        ],
+        "currentSamplesMs": [
+          0.218625,
+          0.204667,
+          0.20675,
+          0.193167,
+          0.197708,
+          0.230958,
+          0.200209
+        ],
+        "baselineMedianMs": 0.216916,
+        "currentMedianMs": 0.204667,
+        "ratio": 0.9435311364767928
+      },
+      "hot": {
+        "baselineSamplesMs": [
+          0.0035359693787348394,
+          0.003325762425794436,
+          0.0033092018432112247,
+          0.0033061017439457805,
+          0.0033416762794272444,
+          0.0033073010599771802,
+          0.003323854267765738
+        ],
+        "currentSamplesMs": [
+          0.0035007460923141553,
+          0.003281351675936408,
+          0.003282118183757528,
+          0.003272603920541938,
+          0.003274555069829887,
+          0.003274472404590776,
+          0.003310054698619708
+        ],
+        "baselineMedianMs": 0.003323854267765738,
+        "currentMedianMs": 0.003281351675936408,
+        "ratio": 0.9872128594079728,
+        "baselineCalls": 418128,
+        "currentCalls": 422713
+      },
+      "deterministic": {
+        "baseline": true,
+        "current": true
+      },
+      "cache": {
+        "baselineFillMisses": 0,
+        "baselineHotHits": 0,
+        "currentFillMisses": 0,
+        "currentHotHits": 0,
+        "currentColdMiss": true,
+        "currentHotHit": true,
+        "hotResultsValid": true,
+        "qualityMatchesCold": true
+      },
+      "quality": {
+        "pass": true,
+        "errors": []
+      },
+      "baseline": {
+        "cacheHits": 0,
+        "cacheMisses": 0,
+        "truncated": false,
+        "expectedSatisfied": 0,
+        "satisfiedExpectedTargetIds": [],
+        "enabledExpected": 0,
+        "satisfied": 0,
+        "targetProduction": {},
+        "totalProduced": 0,
+        "demandCost": 0,
+        "valid": true,
+        "validationErrors": []
+      },
+      "current": {
+        "cacheHits": 0,
+        "cacheMisses": 0,
+        "truncated": false,
+        "expectedSatisfied": 0,
+        "satisfiedExpectedTargetIds": [],
+        "enabledExpected": 0,
+        "satisfied": 0,
+        "targetProduction": {},
+        "totalProduced": 0,
+        "demandCost": 0,
+        "valid": true,
+        "validationErrors": []
+      }
+    },
+    {
+      "scenario": "no-enabled-targets",
+      "mode": "maximize",
+      "beamWidth": 300,
+      "cold": {
+        "baselineSamplesMs": [
+          0.201708,
+          0.202916,
+          0.197375,
+          0.200458,
+          0.21,
+          0.204416,
+          0.207541
+        ],
+        "currentSamplesMs": [
+          0.200375,
+          0.200541,
+          0.193917,
+          0.194125,
+          0.195917,
+          0.192083,
+          0.2005
+        ],
+        "baselineMedianMs": 0.202916,
+        "currentMedianMs": 0.195917,
+        "ratio": 0.9655078948924678
+      },
+      "hot": {
+        "baselineSamplesMs": [
+          0.0035211124628087534,
+          0.003313169532518305,
+          0.0033805348613153495,
+          0.0033208209440948413,
+          0.003333336116666667,
+          0.0033001093144130024,
+          0.003320942780286929
+        ],
+        "currentSamplesMs": [
+          0.003479846695897275,
+          0.003304798906128654,
+          0.0033052062104410767,
+          0.003288851295796882,
+          0.003291037945106299,
+          0.003274851142913283,
+          0.003324047533572663
+        ],
+        "baselineMedianMs": 0.003320942780286929,
+        "currentMedianMs": 0.003304798906128654,
+        "ratio": 0.9951387677456821,
+        "baselineCalls": 417386,
+        "currentCalls": 421328
+      },
+      "deterministic": {
+        "baseline": true,
+        "current": true
+      },
+      "cache": {
+        "baselineFillMisses": 0,
+        "baselineHotHits": 0,
+        "currentFillMisses": 0,
+        "currentHotHits": 0,
+        "currentColdMiss": true,
+        "currentHotHit": true,
+        "hotResultsValid": true,
+        "qualityMatchesCold": true
+      },
+      "quality": {
+        "pass": true,
+        "errors": []
+      },
+      "baseline": {
+        "cacheHits": 0,
+        "cacheMisses": 0,
+        "truncated": false,
+        "expectedSatisfied": 0,
+        "satisfiedExpectedTargetIds": [],
+        "enabledExpected": 0,
+        "satisfied": 0,
+        "targetProduction": {},
+        "totalProduced": 0,
+        "demandCost": 0,
+        "valid": true,
+        "validationErrors": []
+      },
+      "current": {
+        "cacheHits": 0,
+        "cacheMisses": 0,
+        "truncated": false,
+        "expectedSatisfied": 0,
+        "satisfiedExpectedTargetIds": [],
+        "enabledExpected": 0,
+        "satisfied": 0,
+        "targetProduction": {},
+        "totalProduced": 0,
+        "demandCost": 0,
+        "valid": true,
+        "validationErrors": []
+      }
+    }
+  ]
+}

@@ -1463,11 +1463,29 @@ const STAR_LABELS = {
 };
 
 const STAR_OPTIONS = [1, 2, 3, 4, 5, 6, 7];
-const MAX_SEARCH_STATES = 900000;
+const CREW_INFO_CACHE = Object.create(null);
+const CREW_SORT_RANK = Object.create(null);
+let SORTED_CREW_IDS = [];
 
 function compareNames(a, b) {
   return a.localeCompare(b, 'zh-Hans-CN');
 }
+
+// 船员元数据和中文排序只依赖静态 DATA。模块加载时预计算，搜索热路径只做
+// 对象/整数查找；未知 ID 仍保留原先的比较和回退行为。
+Object.entries(DATA.crews).forEach(([id, info]) => {
+  CREW_INFO_CACHE[id] = Object.freeze({
+    id,
+    name: info[0],
+    rarity: Number(info[1])
+  });
+});
+SORTED_CREW_IDS = Object.keys(CREW_INFO_CACHE).sort((leftId, rightId) => (
+  compareNames(CREW_INFO_CACHE[leftId].name, CREW_INFO_CACHE[rightId].name) || Number(leftId) - Number(rightId)
+));
+SORTED_CREW_IDS.forEach((id, index) => {
+  CREW_SORT_RANK[id] = index;
+});
 
 function normalize(value) {
   return String(value || '').trim().toLowerCase().replace(/\s+/g, '');
@@ -1489,30 +1507,29 @@ function cloneInventory(inventory) {
 }
 
 function getCrewInfo(id) {
-  const info = DATA.crews[String(id)];
-  if (!info) {
-    return {
-      id: String(id),
-      name: '未知船员',
-      rarity: 0
-    };
-  }
-
-  return {
-    id: String(id),
-    name: info[0],
-    rarity: Number(info[1])
+  const normalizedId = String(id);
+  return CREW_INFO_CACHE[normalizedId] || {
+    id: normalizedId,
+    name: '未知船员',
+    rarity: 0
   };
 }
 
 function compareCrewIds(leftId, rightId) {
-  const left = getCrewInfo(leftId);
-  const right = getCrewInfo(rightId);
+  const normalizedLeft = String(leftId);
+  const normalizedRight = String(rightId);
+  const leftRank = CREW_SORT_RANK[normalizedLeft];
+  const rightRank = CREW_SORT_RANK[normalizedRight];
+  if (leftRank !== undefined && rightRank !== undefined) {
+    return leftRank - rightRank;
+  }
+  const left = getCrewInfo(normalizedLeft);
+  const right = getCrewInfo(normalizedRight);
   return compareNames(left.name, right.name) || Number(left.id) - Number(right.id);
 }
 
 function getAllCrewIds() {
-  return Object.keys(DATA.crews).sort(compareCrewIds);
+  return SORTED_CREW_IDS.slice();
 }
 
 function recipeDisplayComparator(left, right) {
@@ -1584,10 +1601,17 @@ function buildRecipeBook() {
 }
 
 const RECIPE_BOOK = buildRecipeBook();
+const RECIPE_SORT_RANK = Object.create(null);
+Object.keys(RECIPE_BOOK.byKey)
+  .sort((left, right) => left < right ? -1 : left > right ? 1 : 0)
+  .forEach((key, index) => {
+    RECIPE_SORT_RANK[key] = index;
+  });
 const TARGET_CLOSURE_CACHE = new Map();
+const PRODUCTION_MODEL_CACHE = new Map();
 const ROUTE_POOL_CACHE = new Map();
 const ROUTE_POOL_CACHE_LIMIT = 80;
-const ROUTE_POOL_CACHE_VERSION = 'route-pool-v2';
+const ROUTE_POOL_CACHE_VERSION = 'route-pool-v4-compiled';
 
 function getCraftableTargetIds() {
   return RECIPE_BOOK.craftableIds.slice();
@@ -1691,23 +1715,6 @@ function buildTargetClosure(targetId) {
   };
 }
 
-function countsKey(counts) {
-  return counts.join(',');
-}
-
-function isRecipeFeasible(recipe, counts) {
-  if (recipe.aIdx === recipe.bIdx) {
-    return counts[recipe.aIdx] >= 2;
-  }
-  return counts[recipe.aIdx] >= 1 && counts[recipe.bIdx] >= 1;
-}
-
-function chooseBetterRecipe(candidate, current) {
-  if (!current) {
-    return true;
-  }
-  return recipeSummaryComparator(candidate, current) < 0;
-}
 
 function buildPlanArtifacts(targetId, recipeCounts, rawInventory) {
   const recipeEntries = Object.entries(recipeCounts)
@@ -1833,110 +1840,21 @@ function analyzeSingleTarget(targetId, inventory, options = {}) {
     };
   }
 
-  const nodeIds = closure.nodeIds.slice();
-  const nodeIndex = {};
-  nodeIds.forEach((id, index) => {
-    nodeIndex[id] = index;
+  const result = solveTargetProductionMulti(targetId, normalizedInventory, closure.recipeKeys, {
+    attempts: options.attempts || 4,
+    deadline: performance.now() + (options.maxMs || 2000)
   });
 
-  const recipes = closure.recipeKeys.map((recipe) => ({
-    ...recipe,
-    aIdx: nodeIndex[recipe.a],
-    bIdx: nodeIndex[recipe.b],
-    outIdx: recipe.out === String(targetId) ? -1 : nodeIndex[recipe.out]
-  }));
-
-  const memo = new Map();
-  let exploredStates = 0;
-  let truncated = false;
-  const searchLimit = options.searchLimit || MAX_SEARCH_STATES;
-
-  function dfs(counts) {
-    const key = countsKey(counts);
-    if (memo.has(key)) {
-      return memo.get(key);
-    }
-
-    exploredStates += 1;
-    if (exploredStates > searchLimit) {
-      truncated = true;
-      const fallback = { count: 0, choiceKey: '' };
-      memo.set(key, fallback);
-      return fallback;
-    }
-
-    let bestCount = 0;
-    let bestRecipe = null;
-
-    for (let index = 0; index < recipes.length; index += 1) {
-      const recipe = recipes[index];
-      if (!isRecipeFeasible(recipe, counts)) {
-        continue;
-      }
-
-      counts[recipe.aIdx] -= 1;
-      counts[recipe.bIdx] -= 1;
-
-      let candidate = 0;
-      if (recipe.outIdx >= 0) {
-        counts[recipe.outIdx] += 1;
-        candidate = dfs(counts).count;
-        counts[recipe.outIdx] -= 1;
-      } else {
-        candidate = dfs(counts).count + 1;
-      }
-
-      counts[recipe.aIdx] += 1;
-      counts[recipe.bIdx] += 1;
-
-      if (candidate > bestCount || (candidate === bestCount && chooseBetterRecipe(recipe, bestRecipe))) {
-        bestCount = candidate;
-        bestRecipe = recipe;
-      }
-    }
-
-    const best = {
-      count: bestCount,
-      choiceKey: bestRecipe ? bestRecipe.key : ''
-    };
-    memo.set(key, best);
-    return best;
-  }
-
-  const rootCounts = nodeIds.map((id) => normalizeQuantity(normalizedInventory[id]));
-  const root = dfs(rootCounts.slice());
-  const recipeCounts = {};
-  const cursor = rootCounts.slice();
-
-  while (true) {
-    const entry = memo.get(countsKey(cursor));
-    if (!entry || !entry.choiceKey) {
-      break;
-    }
-
-    const recipe = recipes.find((candidate) => candidate.key === entry.choiceKey);
-    if (!recipe) {
-      break;
-    }
-
-    recipeCounts[recipe.key] = (recipeCounts[recipe.key] || 0) + 1;
-    cursor[recipe.aIdx] -= 1;
-    cursor[recipe.bIdx] -= 1;
-    if (recipe.outIdx >= 0) {
-      cursor[recipe.outIdx] += 1;
-    }
-  }
-
-  const artifacts = buildPlanArtifacts(targetId, recipeCounts, normalizedInventory);
+  const artifacts = buildPlanArtifacts(targetId, result.recipeCounts, normalizedInventory);
   return {
     targetId: String(targetId),
     target,
     existingOwned,
-    craftedCount: root.count,
-    totalOwnedAfterPlan: existingOwned + root.count,
-    truncated,
-    exploredStates,
-    recipeCounts,
+    craftedCount: result.produced,
+    totalOwnedAfterPlan: existingOwned + result.produced,
+    truncated: result.truncated,
+    exploredStates: result.exploredStates,
+    recipeCounts: result.recipeCounts,
     ...artifacts
   };
 }
@@ -2144,15 +2062,12 @@ function inventorySignature(inventory) {
     .join(',');
 }
 
-function clonePlainObject(value) {
-  return JSON.parse(JSON.stringify(value));
-}
-
-function getRoutePoolCacheKey(targetId, inventory, beamWidth) {
+function getRoutePoolCacheKey(targetId, inventory, beamWidth, generationSignature) {
   return [
     ROUTE_POOL_CACHE_VERSION,
     String(targetId),
     normalizeBeamWidth(beamWidth),
+    generationSignature,
     inventorySignature(inventory)
   ].join('::');
 }
@@ -2164,14 +2079,16 @@ function readRoutePoolCache(key) {
   const cached = ROUTE_POOL_CACHE.get(key);
   ROUTE_POOL_CACHE.delete(key);
   ROUTE_POOL_CACHE.set(key, cached);
-  return clonePlainObject(cached);
+  return cached;
 }
 
 function writeRoutePoolCache(key, pool) {
   if (!key || !pool || pool.truncated) {
     return;
   }
-  ROUTE_POOL_CACHE.set(key, clonePlainObject(pool));
+  // 缓存项是 planner-core 内部只读值。调用方只获得新的顶层元数据包装，
+  // 组合搜索若需排序会先 slice()，不得修改 routes 或路线对象。
+  ROUTE_POOL_CACHE.set(key, pool);
   while (ROUTE_POOL_CACHE.size > ROUTE_POOL_CACHE_LIMIT) {
     ROUTE_POOL_CACHE.delete(ROUTE_POOL_CACHE.keys().next().value);
   }
@@ -2182,237 +2099,338 @@ function createSearchStats() {
     routePoolCacheHits: 0,
     routePoolCacheMisses: 0,
     upperBoundPruned: 0,
-    candidateScoreVersion: '库存 + 稀缺度 + 深度 + 星级'
+    candidateScoreVersion: '编译模型 · 惰性候选排序 · 批量重复 · 多变体重启'
   };
 }
 
-function cloneRoute(route) {
-  return {
-    inventory: cloneInventory(route.inventory),
-    recipeCounts: { ...(route.recipeCounts || {}) },
-    cost: route.cost || 0
-  };
-}
+/* ================================================================== */
+/*  核心求解器：决策变量是“每个配方执行几次”，而不是库存状态序列。      */
+/*  单个产出单元用一次无分支贪心递归（带回滚日志）构造，得到该单元的     */
+/*  需求向量 d 后，用算术 k = min⌊库存/d⌋ 批量重复，直到路线失效再换路。  */
+/*  多次不同排序的重启（variant）替代旧的指数级 beam 分支。              */
+/* ================================================================== */
 
-function consumeCrewFromInventory(inventory, id) {
-  const next = cloneInventory(inventory);
-  next[id] = normalizeQuantity(next[id]) - 1;
-  if (normalizeQuantity(next[id]) <= 0) {
-    delete next[id];
-  }
-  return next;
-}
-
-function getIngredientPressure(id, recipeGraph = RECIPE_BOOK) {
-  if (!recipeGraph.__ingredientPressure) {
-    const pressure = {};
-    Object.values(recipeGraph.byOutput || {}).forEach((recipes) => {
-      (recipes || []).forEach((recipe) => {
-        pressure[recipe.a] = (pressure[recipe.a] || 0) + 1;
-        pressure[recipe.b] = (pressure[recipe.b] || 0) + 1;
-      });
-    });
-    recipeGraph.__ingredientPressure = pressure;
-  }
-  return normalizeQuantity(recipeGraph.__ingredientPressure[String(id)]);
-}
-
-function estimateCraftDepth(id, recipeGraph = RECIPE_BOOK, visiting = new Set()) {
-  const crewId = String(id);
-  if (!recipeGraph.__craftDepthMemo) {
-    recipeGraph.__craftDepthMemo = {};
-  }
-  if (Object.prototype.hasOwnProperty.call(recipeGraph.__craftDepthMemo, crewId)) {
-    return recipeGraph.__craftDepthMemo[crewId];
-  }
-  if (visiting.has(crewId)) {
-    return Infinity;
-  }
-  const recipes = recipeGraph.byOutput?.[crewId] || [];
-  if (!recipes.length) {
-    recipeGraph.__craftDepthMemo[crewId] = Infinity;
-    return Infinity;
+function createProductionModel(targetId, recipeObjs) {
+  const normalizedTargetId = String(targetId);
+  const recipeSignature = recipeObjs.map((recipe) => recipe.key).join(',');
+  const cacheKey = `${normalizedTargetId}::${recipeSignature}`;
+  if (PRODUCTION_MODEL_CACHE.has(cacheKey)) {
+    return PRODUCTION_MODEL_CACHE.get(cacheKey);
   }
 
-  visiting.add(crewId);
-  let best = Infinity;
+  const ids = new Set([normalizedTargetId]);
+  recipeObjs.forEach((recipe) => {
+    ids.add(recipe.a);
+    ids.add(recipe.b);
+    ids.add(recipe.out);
+  });
+  const idList = Array.from(ids).sort(compareCrewIds);
+  const idIndex = Object.create(null);
+  idList.forEach((id, index) => {
+    idIndex[id] = index;
+  });
+  const rarities = Int8Array.from(idList, (id) => getCrewInfo(id).rarity);
+  const recipes = recipeObjs.map((recipe, index) => ({
+    index,
+    key: recipe.key,
+    keyRank: RECIPE_SORT_RANK[recipe.key] ?? Number.MAX_SAFE_INTEGER,
+    a: idIndex[recipe.a],
+    b: idIndex[recipe.b],
+    out: idIndex[recipe.out],
+    same: recipe.a === recipe.b
+  }));
+  const byOut = idList.map(() => []);
   recipes.forEach((recipe) => {
-    const aDepth = estimateCraftDepth(recipe.a, recipeGraph, visiting);
-    const bDepth = estimateCraftDepth(recipe.b, recipeGraph, visiting);
-    const depth = Math.max(
-      Number.isFinite(aDepth) ? aDepth : 0,
-      Number.isFinite(bDepth) ? bDepth : 0
-    ) + 1;
-    best = Math.min(best, depth);
+    byOut[recipe.out].push(recipe.index);
   });
-  visiting.delete(crewId);
-  recipeGraph.__craftDepthMemo[crewId] = best;
-  return best;
+  const rarityOrder = Int32Array.from(idList.map((_, index) => index)
+    .sort((left, right) => rarities[left] - rarities[right] || left - right));
+  // 变体扰动只在对应重启真正运行时惰性生成；空库存和 60 宽度不会为
+  // 永远用不到的变体付哈希开销。
+  const variantPerturbations = new Array(6);
+  const model = {
+    targetIdx: idIndex[normalizedTargetId],
+    idList,
+    idIndex,
+    rarities,
+    recipes,
+    byOut,
+    rarityOrder,
+    variantPerturbations
+  };
+  PRODUCTION_MODEL_CACHE.set(cacheKey, model);
+  return model;
 }
 
-function scoreIngredientForRecipe(id, inventory, recipeGraph = RECIPE_BOOK) {
-  const qty = normalizeQuantity(inventory[id]);
-  const rarity = Math.max(1, getCrewInfo(id).rarity);
-  const pressure = getIngredientPressure(id, recipeGraph);
-  const craftDepth = estimateCraftDepth(id, recipeGraph);
-  const directStockScore = Math.min(qty, 4) * 1.25 + Math.max(0, qty - 4) * 0.18;
-  const craftScore = Number.isFinite(craftDepth) ? 0.8 / (craftDepth + 1) : 0;
-  const scarcityPenalty = pressure > 0 ? pressure / Math.max(1, qty + 1) * 0.28 : 0;
-  const rarityPenalty = rarity * 0.035;
-  return directStockScore + craftScore - scarcityPenalty - rarityPenalty;
+function hashStringToUnit(text) {
+  let hash = 2166136261;
+  for (let index = 0; index < text.length; index += 1) {
+    hash ^= text.charCodeAt(index);
+    hash = Math.imul(hash, 16777619);
+  }
+  return ((hash >>> 0) % 1000) / 1000;
 }
 
-function recipeAvailabilityScore(recipe, inventory, recipeGraph = RECIPE_BOOK) {
-  const aQty = normalizeQuantity(inventory[recipe.a]);
-  const bQty = normalizeQuantity(inventory[recipe.b]);
-  const enough = recipe.a === recipe.b
-    ? aQty >= 2
-    : aQty > 0 && bQty > 0;
-  const duplicatePenalty = recipe.a === recipe.b && aQty < 2 ? 0.8 : 0;
-  return (
-    scoreIngredientForRecipe(recipe.a, inventory, recipeGraph) +
-    scoreIngredientForRecipe(recipe.b, inventory, recipeGraph) +
-    (enough ? 1000 : 0) -
-    duplicatePenalty
-  );
-}
+function solveTargetProduction(targetId, rawInventory, recipeObjs, options = {}) {
+  const model = options.model || createProductionModel(targetId, recipeObjs);
+  const { idList, recipes, byOut, rarityOrder, targetIdx, variantPerturbations } = model;
+  const n = idList.length;
+  const deadline = options.deadline || Infinity;
+  const variant = options.variant || 0;
+  const maxRecorded = options.maxRecorded || 0;
+  const unitBudget = options.unitBudget || 60000;
 
-function getCandidateRecipesForOutput(outputId, inventory, limit = 24, recipeGraph = RECIPE_BOOK) {
-  const source = recipeGraph.byOutput?.[String(outputId)] || [];
-  const keep = [];
-  source.forEach((recipe) => {
-    if (!isValidPlanningRecipe(recipe)) {
-      return;
-    }
-    const enough = recipe.a === recipe.b
-      ? normalizeQuantity(inventory[recipe.a]) >= 2
-      : normalizeQuantity(inventory[recipe.a]) > 0 && normalizeQuantity(inventory[recipe.b]) > 0;
-    const score = recipeAvailabilityScore(recipe, inventory, recipeGraph) + (enough ? 0.5 : 0);
-    keep.push({ recipe, score });
-  });
-  return keep
-    .sort((left, right) => right.score - left.score || recipeSummaryComparator(left.recipe, right.recipe))
-    .slice(0, limit)
-    .map((entry) => entry.recipe);
-}
+  const counts = new Int32Array(n);
+  for (let index = 0; index < n; index += 1) {
+    counts[index] = normalizeQuantity(rawInventory[idList[index]]);
+  }
 
-function dedupeRoutes(routes, limit) {
-  const seen = new Set();
-  return routes
-    .sort((left, right) => (
-      left.cost - right.cost ||
-      recipeCountsSignature(left.recipeCounts).localeCompare(recipeCountsSignature(right.recipeCounts))
-    ))
-    .filter((route) => {
-      const key = `${inventorySignature(route.inventory)}|${recipeCountsSignature(route.recipeCounts)}`;
-      if (seen.has(key)) {
-        return false;
+  const ub = new Int32Array(n);
+  const orderedByOut = byOut.map((list) => list.slice());
+  const orderingEpoch = new Int32Array(n);
+  const recipeScores = new Float64Array(recipes.length);
+  let roundEpoch = 0;
+  let exploredStates = 0;
+  let truncated = false;
+
+  // 宽松上界：忽略原料共享，仅用于剪掉绝对不可能的子树（ub==0 时必然失败）。
+  function refreshUpperBounds() {
+    for (const index of rarityOrder) {
+      let bound = counts[index];
+      for (const recipeIndex of byOut[index]) {
+        const recipe = recipes[recipeIndex];
+        bound += recipe.same
+          ? Math.floor(ub[recipe.a] / 2)
+          : Math.min(ub[recipe.a], ub[recipe.b]);
+        if (bound > 99999) {
+          bound = 99999;
+          break;
+        }
       }
-      seen.add(key);
-      return true;
-    })
-    .slice(0, limit);
-}
-
-function provideOneCrew(id, inventory, options = {}, depth = 0) {
-  const crew = getCrewInfo(id);
-  const limit = options.routeLimit || 4;
-  const recipeLimit = options.recipeLimit || 5;
-  const branchFanout = options.branchFanout || 1;
-  const routes = [];
-
-  if (crew.rarity === 6 || depth > 6 || (options.deadline && performance.now() > options.deadline)) {
-    return routes;
-  }
-
-  if (crew.rarity <= 5 && normalizeQuantity(inventory[id]) > 0) {
-    routes.push({
-      inventory: consumeCrewFromInventory(inventory, id),
-      recipeCounts: {},
-      cost: 0
-    });
-    if (options.preferInventory !== false) {
-      return dedupeRoutes(routes, limit);
+      ub[index] = bound;
     }
   }
 
-  if (crew.rarity <= 1) {
-    return dedupeRoutes(routes, limit);
+  // 每轮开始时固定一份分数快照。每条配方只计算一次；候选列表只有在
+  // provide() 真正访问该输出时才排序，因此递归中的库存扣减不会改变本轮顺序。
+  function prepareRoundOrdering() {
+    roundEpoch += 1;
+    let perturbations = variantPerturbations[variant];
+    if (variant >= 2 && !perturbations && variant < variantPerturbations.length) {
+      perturbations = Float64Array.from(recipes, (recipe) => hashStringToUnit(`${variant}|${recipe.key}`) * 320);
+      variantPerturbations[variant] = perturbations;
+    }
+    for (let recipeIndex = 0; recipeIndex < recipes.length; recipeIndex += 1) {
+      const recipe = recipes[recipeIndex];
+      const need = recipe.same ? 2 : 1;
+      const aDirect = counts[recipe.a] >= need ? 2 : ub[recipe.a] >= need ? 1 : 0;
+      const bDirect = recipe.same
+        ? aDirect
+        : counts[recipe.b] >= 1 ? 2 : ub[recipe.b] >= 1 ? 1 : 0;
+      const abundance = recipe.same
+        ? Math.floor(counts[recipe.a] / 2)
+        : Math.min(counts[recipe.a], counts[recipe.b]);
+      const clipped = Math.min(abundance, 60);
+      let score = (aDirect + bDirect) * 1000;
+      score += variant === 1 ? -clipped * 4 : clipped * 4;
+      if (variant >= 2) {
+        score += perturbations
+          ? perturbations[recipeIndex]
+          : hashStringToUnit(`${variant}|${recipe.key}`) * 320;
+      }
+      recipeScores[recipeIndex] = score;
+    }
   }
 
-  for (const recipe of getCandidateRecipesForOutput(id, inventory, recipeLimit, options.recipeGraph)) {
-    if (options.deadline && performance.now() > options.deadline) {
+  function getOrderedRecipes(index) {
+    const list = orderedByOut[index];
+    if (list.length > 1 && orderingEpoch[index] !== roundEpoch) {
+      list.sort((leftIndex, rightIndex) => (
+        recipeScores[rightIndex] - recipeScores[leftIndex] ||
+        recipes[leftIndex].keyRank - recipes[rightIndex].keyRank ||
+        (recipes[leftIndex].key < recipes[rightIndex].key ? -1 : 1)
+      ));
+      orderingEpoch[index] = roundEpoch;
+    }
+    return list;
+  }
+
+  const consumedLog = [];
+  const craftLog = [];
+  let budgetLeft = 0;
+
+  function provide(index, allowStock) {
+    exploredStates += 1;
+    budgetLeft -= 1;
+    if (budgetLeft <= 0) {
+      return false;
+    }
+    if (allowStock && counts[index] > 0) {
+      counts[index] -= 1;
+      consumedLog.push(index);
+      return true;
+    }
+    if (ub[index] <= 0) {
+      return false;
+    }
+    const list = getOrderedRecipes(index);
+    for (let cursor = 0; cursor < list.length; cursor += 1) {
+      const recipeIndex = list[cursor];
+      const recipe = recipes[recipeIndex];
+      const consumedMark = consumedLog.length;
+      const craftMark = craftLog.length;
+      if (provide(recipe.a, true) && provide(recipe.b, true)) {
+        craftLog.push(recipeIndex);
+        return true;
+      }
+      while (consumedLog.length > consumedMark) {
+        counts[consumedLog.pop()] += 1;
+      }
+      craftLog.length = craftMark;
+      if (budgetLeft <= 0) {
+        break;
+      }
+    }
+    return false;
+  }
+
+  let produced = 0;
+  const cumDemand = {};
+  const cumRecipes = {};
+  const prefixes = maxRecorded > 0 ? [] : null;
+  const shouldRecord = options.shouldRecord || ((count) => count <= maxRecorded);
+
+  while (true) {
+    if (performance.now() > deadline) {
+      truncated = true;
       break;
     }
-    const firstRoutes = provideOneCrew(recipe.a, inventory, options, depth + 1).slice(0, branchFanout);
-    firstRoutes.forEach((firstRoute) => {
-      const secondRoutes = provideOneCrew(recipe.b, firstRoute.inventory, options, depth + 1).slice(0, branchFanout);
-      secondRoutes.forEach((secondRoute) => {
-        routes.push({
-          inventory: secondRoute.inventory,
-          recipeCounts: mergeRecipeCounts(
-            mergeRecipeCounts(firstRoute.recipeCounts, secondRoute.recipeCounts),
-            { [recipe.key]: 1 }
-          ),
-          cost: firstRoute.cost + secondRoute.cost + Math.max(1, crew.rarity)
-        });
-      });
+    refreshUpperBounds();
+    if (ub[targetIdx] - counts[targetIdx] <= 0) {
+      break; // 上界证明已无法再合成（库存中已有的目标不参与计数）
+    }
+    prepareRoundOrdering();
+    consumedLog.length = 0;
+    craftLog.length = 0;
+    budgetLeft = unitBudget;
+    if (!provide(targetIdx, false)) {
+      break;
+    }
+
+    const unitDemand = new Int32Array(n);
+    const demandIndices = [];
+    for (const index of consumedLog) {
+      if (unitDemand[index] === 0) {
+        demandIndices.push(index);
+      }
+      unitDemand[index] += 1;
+    }
+    const unitRecipes = new Int32Array(recipes.length);
+    const recipeIndices = [];
+    for (const recipeIndex of craftLog) {
+      if (unitRecipes[recipeIndex] === 0) {
+        recipeIndices.push(recipeIndex);
+      }
+      unitRecipes[recipeIndex] += 1;
+    }
+
+    // provide 已提交第一单元；其余相同路线用一次向量扣减和一次向量累加。
+    let extra = Infinity;
+    for (const index of demandIndices) {
+      extra = Math.min(extra, Math.floor(counts[index] / unitDemand[index]));
+    }
+    if (!Number.isFinite(extra)) {
+      extra = 0;
+    }
+    if (options.maxCount) {
+      extra = Math.min(extra, Math.max(0, options.maxCount - produced - 1));
+    }
+
+    const previousProduced = produced;
+    const repeatCount = extra + 1;
+    if (prefixes) {
+      for (let offset = 1; offset <= repeatCount; offset += 1) {
+        const count = previousProduced + offset;
+        if (!shouldRecord(count)) {
+          continue;
+        }
+        const demand = { ...cumDemand };
+        for (const index of demandIndices) {
+          const id = idList[index];
+          demand[id] = (demand[id] || 0) + unitDemand[index] * offset;
+        }
+        const recipeCounts = { ...cumRecipes };
+        for (const recipeIndex of recipeIndices) {
+          const key = recipes[recipeIndex].key;
+          recipeCounts[key] = (recipeCounts[key] || 0) + unitRecipes[recipeIndex] * offset;
+        }
+        prefixes.push({ count, demand, recipeCounts });
+      }
+    }
+
+    for (const index of demandIndices) {
+      counts[index] -= unitDemand[index] * extra;
+      const id = idList[index];
+      cumDemand[id] = (cumDemand[id] || 0) + unitDemand[index] * repeatCount;
+    }
+    for (const recipeIndex of recipeIndices) {
+      const key = recipes[recipeIndex].key;
+      cumRecipes[key] = (cumRecipes[key] || 0) + unitRecipes[recipeIndex] * repeatCount;
+    }
+    produced += repeatCount;
+
+    if (options.maxCount && produced >= options.maxCount) {
+      break;
+    }
+  }
+
+  if (prefixes && produced > 0 && (!prefixes.length || prefixes[prefixes.length - 1].count !== produced)) {
+    prefixes.push({
+      count: produced,
+      demand: { ...cumDemand },
+      recipeCounts: { ...cumRecipes }
     });
   }
 
-  return dedupeRoutes(routes, limit);
+  return {
+    produced,
+    recipeCounts: cumRecipes,
+    demand: cumDemand,
+    prefixes,
+    exploredStates,
+    truncated
+  };
 }
 
-function findCandidateRoutesForTarget(targetId, inventory, limit = 8, recipeGraph = RECIPE_BOOK, options = {}) {
-  const target = getCrewInfo(targetId);
-  if (target.rarity !== 7) {
-    return [];
-  }
-  return provideOneCrew(targetId, inventory, {
-    routeLimit: limit,
-    recipeLimit: options.recipeLimit || 6,
-    branchFanout: options.branchFanout || 1,
-    deadline: options.deadline,
-    preferInventory: options.preferInventory,
-    recipeGraph
-  }).slice(0, limit);
-}
+function solveTargetProductionMulti(targetId, inventory, recipeObjs, options = {}) {
+  const model = options.model || createProductionModel(targetId, recipeObjs);
+  const attempts = Math.max(1, options.attempts || 1);
+  const deadline = options.deadline || Infinity;
+  let best = null;
+  let bestCost = Infinity;
+  let exploredStates = 0;
+  let truncated = false;
 
-function scoreOptimizationState(candidate, targets, mode) {
-  const total = Object.values(candidate.targetCounts).reduce((sum, count) => sum + count, 0);
-  const maxPriority = Math.max(...targets.map((target) => Math.max(1, normalizeQuantity(target.priority) || 1)));
-  let score = total * (mode === 'maximize' ? 10000 : 1000);
-  targets.forEach((target) => {
-    const count = normalizeQuantity(candidate.targetCounts[target.targetId]);
-    const priorityWeight = Math.max(1, maxPriority - Math.max(1, normalizeQuantity(target.priority) || 1) + 1);
-    const desired = normalizeQuantity(target.desiredCount);
-    if (mode === 'guarantee' && desired > 0) {
-      score += Math.min(count, desired) * 90000 * priorityWeight;
-      score -= Math.max(0, desired - count) * 12000 * priorityWeight;
-      score += Math.max(0, count - desired) * 500 * priorityWeight;
-    } else {
-      score += count * 1400 * priorityWeight;
+  for (let variant = 0; variant < attempts; variant += 1) {
+    if (variant > 0 && performance.now() > deadline) {
+      truncated = true;
+      break;
     }
-  });
-  score -= Object.keys(candidate.recipeCounts || {}).length * 0.2;
-  return score;
-}
-
-function getOptimizationProducedCount(candidate) {
-  return Object.values(candidate?.targetCounts || {}).reduce((sum, count) => sum + normalizeQuantity(count), 0);
-}
-
-function compareOptimizationStates(left, right, mode) {
-  if (!right) {
-    return 1;
-  }
-  if (mode === 'maximize') {
-    const totalDiff = getOptimizationProducedCount(left) - getOptimizationProducedCount(right);
-    if (totalDiff) {
-      return totalDiff;
+    const run = solveTargetProduction(targetId, inventory, recipeObjs, {
+      ...options,
+      model,
+      variant
+    });
+    exploredStates += run.exploredStates;
+    truncated = truncated || run.truncated;
+    const cost = getDemandCost(run.demand, inventory);
+    if (!best || run.produced > best.produced || (run.produced === best.produced && cost < bestCost)) {
+      best = run;
+      bestCost = cost;
     }
   }
-  return (left.score || 0) - (right.score || 0);
+
+  return { ...(best || { produced: 0, recipeCounts: {}, demand: {}, prefixes: null }), exploredStates, truncated };
 }
 
 function summarizeTargetResults(targets, targetCounts) {
@@ -2429,21 +2447,6 @@ function summarizeTargetResults(targets, targetCounts) {
       satisfied: desired <= 0 || produced === desired
     };
   });
-}
-
-function mergeDemand(base, addition) {
-  const result = { ...(base || {}) };
-  Object.entries(addition || {}).forEach(([id, count]) => {
-    const normalizedCount = normalizeQuantity(count);
-    if (normalizedCount > 0) {
-      result[id] = (result[id] || 0) + normalizedCount;
-    }
-  });
-  return result;
-}
-
-function canApplyDemand(demand, inventory) {
-  return Object.entries(demand || {}).every(([id, count]) => normalizeQuantity(count) <= normalizeQuantity(inventory[id]));
 }
 
 function applyDemand(inventory, demand) {
@@ -2463,41 +2466,6 @@ function getDemandCost(demand, inventory) {
     const rarity = Math.max(1, getCrewInfo(id).rarity);
     return sum + normalizeQuantity(count) * (1 + rarity / 10) * (1 + 1 / owned);
   }, 0);
-}
-
-function estimateCrewUpperBound(id, inventory, recipeGraph = RECIPE_BOOK, memo = {}, visiting = new Set()) {
-  const crewId = String(id);
-  if (Object.prototype.hasOwnProperty.call(memo, crewId)) {
-    return memo[crewId];
-  }
-  const crew = getCrewInfo(crewId);
-  const owned = normalizeQuantity(inventory[crewId]);
-  if (crew.rarity === 6 || crew.rarity <= 1) {
-    memo[crewId] = owned;
-    return owned;
-  }
-  if (visiting.has(crewId)) {
-    return owned;
-  }
-
-  visiting.add(crewId);
-  let craftableUpperBound = 0;
-  (recipeGraph.byOutput?.[crewId] || []).forEach((recipe) => {
-    if (!isValidPlanningRecipe(recipe)) {
-      return;
-    }
-    if (recipe.a === recipe.b) {
-      craftableUpperBound += Math.floor(estimateCrewUpperBound(recipe.a, inventory, recipeGraph, memo, visiting) / 2);
-    } else {
-      const aBound = estimateCrewUpperBound(recipe.a, inventory, recipeGraph, memo, visiting);
-      const bBound = estimateCrewUpperBound(recipe.b, inventory, recipeGraph, memo, visiting);
-      craftableUpperBound += Math.min(aBound, bBound);
-    }
-  });
-  visiting.delete(crewId);
-
-  memo[crewId] = Math.min(9999, owned + craftableUpperBound);
-  return memo[crewId];
 }
 
 function demandDominates(left, right) {
@@ -2534,23 +2502,6 @@ function pruneRouteCandidates(routes, limit) {
   return result.slice(0, limit);
 }
 
-function createRouteCandidate(targetId, count, state, baseInventory) {
-  const artifacts = buildPlanArtifacts(targetId, state.recipeCounts, baseInventory);
-  return {
-    targetId,
-    count,
-    recipeCounts: { ...state.recipeCounts },
-    demand: artifacts.demand,
-    production: artifacts.production,
-    remaining: artifacts.remaining,
-    bottlenecks: artifacts.bottlenecks,
-    recipeEntries: artifacts.recipeEntries,
-    stageGroups: artifacts.stageGroups,
-    cost: getDemandCost(artifacts.demand, baseInventory),
-    signature: recipeCountsSignature(state.recipeCounts)
-  };
-}
-
 function buildTargetRoutePool(target, inventory, options = {}) {
   const startedAt = performance.now();
   const targetId = String(target.targetId || target);
@@ -2558,7 +2509,13 @@ function buildTargetRoutePool(target, inventory, options = {}) {
   const beamWidth = normalizeBeamWidth(options.beamWidth);
   const unlimitedBeam = isUnlimitedBeamWidth(beamWidth);
   const stats = options.stats || null;
-  const cacheKey = getRoutePoolCacheKey(targetId, baseInventory, beamWidth);
+  const attempts = options.attempts || (unlimitedBeam ? 6 : beamWidth >= 300 ? 4 : beamWidth >= 120 ? 3 : 2);
+  const perCountLimit = options.perCountLimit || (unlimitedBeam ? 6 : beamWidth >= 300 ? 4 : 3);
+  const requiredCountValues = Array.from(new Set(
+    (options.requiredCounts || []).map(normalizeQuantity).filter((count) => count > 0)
+  )).sort((left, right) => left - right);
+  const generationSignature = `${attempts}|${perCountLimit}|${requiredCountValues.join(',')}`;
+  const cacheKey = getRoutePoolCacheKey(targetId, baseInventory, beamWidth, generationSignature);
   const cachedPool = readRoutePoolCache(cacheKey);
   if (cachedPool) {
     if (stats) {
@@ -2575,93 +2532,84 @@ function buildTargetRoutePool(target, inventory, options = {}) {
   if (stats) {
     stats.routePoolCacheMisses += 1;
   }
-  const perCountLimit = options.perCountLimit || (unlimitedBeam ? Number.POSITIVE_INFINITY : beamWidth >= 300 ? 24 : beamWidth >= 120 ? 12 : 6);
-  const routeLimit = options.routeLimit || (unlimitedBeam ? 12 : beamWidth >= 300 ? 6 : 4);
-  const recipeLimit = options.recipeLimit || (unlimitedBeam ? 48 : beamWidth >= 300 ? 24 : 12);
-  const branchFanout = options.branchFanout || (unlimitedBeam ? 3 : beamWidth >= 300 ? 2 : 1);
+
   const deadline = options.deadline || Infinity;
+  const requiredCounts = new Set(requiredCountValues);
+  const denseLimit = 64;
+  const sampleStride = 8;
+  const shouldRecord = (count) => count <= denseLimit || count % sampleStride === 0 || requiredCounts.has(count);
+
   const recipeGraph = buildSelectedTargetClosure([targetId]);
+  if (Object.keys(baseInventory).length === 0) {
+    const emptyPool = {
+      targetId,
+      targetName: getCrewInfo(targetId).name,
+      maxCount: 0,
+      routesByCount: {},
+      routes: [],
+      routeCount: 0,
+      closureRecipeCount: recipeGraph.recipeKeys.length,
+      closureCrewCount: recipeGraph.crewIds.length,
+      exploredStates: 0,
+      upperBoundPruned: 0,
+      truncated: performance.now() > deadline,
+      elapsedMs: Math.round(performance.now() - startedAt),
+      fromCache: false
+    };
+    writeRoutePoolCache(cacheKey, emptyPool);
+    return emptyPool;
+  }
+  const recipeObjs = recipeGraph.recipeKeys.map((key) => recipeGraph.byKey[key]);
+  const model = createProductionModel(targetId, recipeObjs);
+
   const routesByCount = {};
-  let beam = [{
-    inventory: baseInventory,
-    recipeCounts: {},
-    count: 0,
-    cost: 0
-  }];
   let exploredStates = 0;
   let truncated = false;
-  let upperBoundPruned = 0;
+  let maxCount = 0;
 
-  while (beam.length && performance.now() < deadline) {
-    const expanded = [];
-    for (const state of beam) {
-      if (performance.now() >= deadline) {
-        truncated = true;
-        break;
-      }
-      if (estimateCrewUpperBound(targetId, state.inventory, recipeGraph) <= 0) {
-        upperBoundPruned += 1;
-        if (stats) {
-          stats.upperBoundPruned += 1;
-        }
-        continue;
-      }
-      const stepRoutes = findCandidateRoutesForTarget(targetId, state.inventory, routeLimit, recipeGraph, {
-        recipeLimit,
-        branchFanout,
-        deadline,
-        preferInventory: true
-      });
-      stepRoutes.forEach((route) => {
-        const nextRecipeCounts = mergeRecipeCounts(state.recipeCounts, route.recipeCounts);
-        expanded.push({
-          inventory: route.inventory,
-          recipeCounts: nextRecipeCounts,
-          count: state.count + 1,
-          cost: state.cost + route.cost
-        });
-        exploredStates += 1;
-      });
-    }
-    if (!expanded.length) {
+  for (let variant = 0; variant < attempts; variant += 1) {
+    if (variant > 0 && performance.now() > deadline) {
+      truncated = true;
       break;
     }
-
-    const nextCount = expanded[0].count;
-    const seen = new Set();
-    const nextBeamStates = expanded
-      .filter((state) => state.count === nextCount)
-      .sort((left, right) => left.cost - right.cost || recipeCountsSignature(left.recipeCounts).localeCompare(recipeCountsSignature(right.recipeCounts)))
-      .filter((state) => {
-        const key = `${inventorySignature(state.inventory)}|${recipeCountsSignature(state.recipeCounts)}`;
-        if (seen.has(key)) {
-          return false;
-        }
-        seen.add(key);
-        return true;
-      })
-      .slice(0, Number.isFinite(perCountLimit) ? perCountLimit * 2 : undefined);
-
-    const routeCandidates = nextBeamStates.map((state) => createRouteCandidate(targetId, nextCount, state, baseInventory));
-    routesByCount[nextCount] = pruneRouteCandidates(routeCandidates, perCountLimit);
-    beam = Number.isFinite(perCountLimit) ? nextBeamStates.slice(0, perCountLimit) : nextBeamStates;
+    const run = solveTargetProduction(targetId, baseInventory, recipeObjs, {
+      model,
+      variant,
+      deadline,
+      maxRecorded: 1,
+      shouldRecord
+    });
+    exploredStates += run.exploredStates;
+    truncated = truncated || run.truncated;
+    maxCount = Math.max(maxCount, run.produced);
+    (run.prefixes || []).forEach((prefix) => {
+      const candidate = {
+        targetId,
+        count: prefix.count,
+        recipeCounts: prefix.recipeCounts,
+        demand: prefix.demand,
+        cost: getDemandCost(prefix.demand, baseInventory)
+      };
+      (routesByCount[prefix.count] ||= []).push(candidate);
+    });
   }
 
-  if (performance.now() >= deadline) {
-    truncated = true;
-  }
+  Object.keys(routesByCount).forEach((count) => {
+    routesByCount[count] = pruneRouteCandidates(routesByCount[count], perCountLimit);
+  });
+
   const allRoutes = Object.values(routesByCount).flat();
   const pool = {
     targetId,
     targetName: getCrewInfo(targetId).name,
-    maxCount: Math.max(0, ...Object.keys(routesByCount).map(Number)),
+    maxCount,
     routesByCount,
     routes: allRoutes,
     routeCount: allRoutes.length,
     closureRecipeCount: recipeGraph.recipeKeys.length,
     closureCrewCount: recipeGraph.crewIds.length,
     exploredStates,
-    upperBoundPruned,
+    upperBoundPruned: 0,
     truncated,
     elapsedMs: Math.round(performance.now() - startedAt),
     fromCache: false
@@ -2670,65 +2618,105 @@ function buildTargetRoutePool(target, inventory, options = {}) {
   return pool;
 }
 
-function scoreRouteCombination(candidate, targets, mode) {
-  const total = getOptimizationProducedCount(candidate);
-  const maxPriority = Math.max(...targets.map((target) => Math.max(1, normalizeQuantity(target.priority) || 1)));
-  let score = total * (mode === 'maximize' ? 100000 : 1000);
-  targets.forEach((target) => {
-    const count = normalizeQuantity(candidate.targetCounts[target.targetId]);
-    const desired = normalizeQuantity(target.desiredCount);
-    const priorityWeight = Math.max(1, maxPriority - Math.max(1, normalizeQuantity(target.priority) || 1) + 1);
-    if (mode === 'guarantee' && desired > 0) {
-      score += count === desired ? 120000 * priorityWeight : 0;
-      score -= Math.abs(desired - count) * 30000 * priorityWeight;
-    } else {
-      score += count * 1200 * priorityWeight;
-    }
-  });
-  score -= getDemandCost(candidate.demand, candidate.baseInventory || {}) * 0.4;
-  return score;
-}
-
 function optimizeRoutePools(routePools, targets, inventory, options = {}) {
   const mode = options.mode === 'maximize' ? 'maximize' : 'guarantee';
   const beamWidth = normalizeBeamWidth(options.beamWidth);
   const baseInventory = cleanWarehouseInventory ? cleanWarehouseInventory(inventory) : cloneInventory(inventory);
+  const routePoolByTarget = new Map(routePools.map((pool) => [pool.targetId, pool]));
+  const demandIds = new Set(Object.keys(baseInventory));
+  routePools.forEach((pool) => {
+    (pool.routes || []).forEach((route) => {
+      Object.keys(route.demand || {}).forEach((id) => demandIds.add(id));
+    });
+  });
+  const demandIdList = Array.from(demandIds).sort((left, right) => Number(left) - Number(right));
+  const demandIdIndex = Object.create(null);
+  demandIdList.forEach((id, index) => {
+    demandIdIndex[id] = index;
+  });
+  const availableVector = Int32Array.from(demandIdList, (id) => normalizeQuantity(baseInventory[id]));
+  const routeDemandEntries = new Map();
+  routePools.forEach((pool) => {
+    (pool.routes || []).forEach((route) => {
+      routeDemandEntries.set(route, Object.entries(route.demand || {})
+        .map(([id, count]) => [demandIdIndex[id], normalizeQuantity(count)])
+        .filter(([, count]) => count > 0));
+    });
+  });
+
+  const maxPriority = Math.max(...targets.map((target) => Math.max(1, normalizeQuantity(target.priority) || 1)));
+  const producedWeight = mode === 'maximize' ? 100000 : 1000;
+  const targetScoreMeta = new Map(targets.map((target) => {
+    const priority = Math.max(1, normalizeQuantity(target.priority) || 1);
+    return [target.targetId, {
+      desired: normalizeQuantity(target.desiredCount),
+      priorityWeight: Math.max(1, maxPriority - priority + 1)
+    }];
+  }));
+
+  function targetScore(meta, count) {
+    if (mode === 'guarantee' && meta.desired > 0) {
+      return (count === meta.desired ? 120000 * meta.priorityWeight : 0) -
+        Math.abs(meta.desired - count) * 30000 * meta.priorityWeight;
+    }
+    return count * 1200 * meta.priorityWeight;
+  }
+
+  const initialScore = targets.reduce((score, target) => score + targetScore(targetScoreMeta.get(target.targetId), 0), 0);
   let beam = [{
-    remaining: baseInventory,
-    demand: {},
-    recipeCounts: {},
+    demandVector: new Int32Array(demandIdList.length),
     targetCounts: {},
+    targetSignature: '',
     selectedRoutes: [],
-    baseInventory,
-    score: 0
+    totalProduced: 0,
+    demandCost: 0,
+    score: initialScore,
+    signature: '|'
   }];
   let exploredStates = 0;
 
   targets.forEach((target) => {
-    const pool = routePools.find((item) => item.targetId === target.targetId);
+    const pool = routePoolByTarget.get(target.targetId);
     const desired = normalizeQuantity(target.desiredCount);
     const poolRoutes = (pool?.routes || []).slice().sort((left, right) => right.count - left.count || left.cost - right.cost);
+    const optionCap = beamWidth === 0 ? 400 : Math.max(48, beamWidth * 2);
+    const zeroRoute = { targetId: target.targetId, count: 0, demand: {}, recipeCounts: {}, stageGroups: [], recipeEntries: [], cost: 0 };
+    routeDemandEntries.set(zeroRoute, []);
     const routeOptions = [
-      { targetId: target.targetId, count: 0, demand: {}, recipeCounts: {}, stageGroups: [], recipeEntries: [], cost: 0 },
-      ...(desired > 0 ? poolRoutes.filter((route) => route.count === desired) : poolRoutes)
+      zeroRoute,
+      ...(desired > 0 ? poolRoutes.filter((route) => route.count === desired) : poolRoutes.slice(0, optionCap))
     ];
+    const meta = targetScoreMeta.get(target.targetId);
+    const zeroTargetScore = targetScore(meta, 0);
     const expanded = [];
     beam.forEach((state) => {
       routeOptions.forEach((route) => {
-        if (!canApplyDemand(route.demand, state.remaining)) {
-          return;
+        const demandEntries = routeDemandEntries.get(route) || [];
+        for (let index = 0; index < demandEntries.length; index += 1) {
+          const [demandIndex, count] = demandEntries[index];
+          if (state.demandVector[demandIndex] + count > availableVector[demandIndex]) {
+            return;
+          }
         }
+        const nextDemandVector = state.demandVector.slice();
+        demandEntries.forEach(([demandIndex, count]) => {
+          nextDemandVector[demandIndex] += count;
+        });
+        const routeCount = normalizeQuantity(route.count);
         const nextTargetCounts = { ...state.targetCounts };
-        nextTargetCounts[target.targetId] = normalizeQuantity(route.count);
+        nextTargetCounts[target.targetId] = routeCount;
+        const routeCost = Number.isFinite(route.cost) ? route.cost : getDemandCost(route.demand, baseInventory);
+        const targetSignature = `${state.targetSignature},${routeCount}`;
         const next = {
-          remaining: applyDemand(state.remaining, route.demand),
-          demand: mergeDemand(state.demand, route.demand),
-          recipeCounts: mergeRecipeCounts(state.recipeCounts, route.recipeCounts),
+          demandVector: nextDemandVector,
           targetCounts: nextTargetCounts,
-          selectedRoutes: route.count > 0 ? [...state.selectedRoutes, route] : state.selectedRoutes.slice(),
-          baseInventory
+          targetSignature,
+          selectedRoutes: routeCount > 0 ? [...state.selectedRoutes, route] : state.selectedRoutes,
+          totalProduced: state.totalProduced + routeCount,
+          demandCost: state.demandCost + routeCost
         };
-        next.score = scoreRouteCombination(next, targets, mode);
+        next.score = state.score + routeCount * producedWeight + targetScore(meta, routeCount) - zeroTargetScore - routeCost * 0.4;
+        next.signature = `${targetSignature}|${nextDemandVector.join(',')}`;
         expanded.push(next);
         exploredStates += 1;
       });
@@ -2738,24 +2726,39 @@ function optimizeRoutePools(routePools, targets, inventory, options = {}) {
     beam = expanded
       .sort((left, right) => (
         mode === 'maximize'
-          ? getOptimizationProducedCount(right) - getOptimizationProducedCount(left) || right.score - left.score
+          ? right.totalProduced - left.totalProduced || right.score - left.score
           : right.score - left.score
-      ) || getDemandCost(left.demand, baseInventory) - getDemandCost(right.demand, baseInventory))
+      ) || left.demandCost - right.demandCost)
       .filter((state) => {
-        const key = `${JSON.stringify(state.targetCounts)}|${Object.entries(state.demand).sort().map(([id, qty]) => `${id}:${qty}`).join(',')}`;
-        if (seen.has(key)) {
+        if (seen.has(state.signature)) {
           return false;
         }
-        seen.add(key);
+        seen.add(state.signature);
         return true;
       })
-      .slice(0, beamWidth === 0 ? undefined : beamWidth);
+      .slice(0, beamWidth === 0 ? 800 : beamWidth);
   });
 
-  return {
-    best: beam[0] || null,
-    exploredStates
-  };
+  const best = beam[0] || null;
+  if (best) {
+    const demand = {};
+    best.demandVector.forEach((count, index) => {
+      if (count > 0) {
+        demand[demandIdList[index]] = count;
+      }
+    });
+    delete best.demandVector;
+    delete best.targetSignature;
+    delete best.signature;
+    best.baseInventory = baseInventory;
+    best.demand = demand;
+    best.remaining = applyDemand(baseInventory, demand);
+    best.recipeCounts = best.selectedRoutes.reduce(
+      (counts, route) => mergeRecipeCounts(counts, route.recipeCounts),
+      {}
+    );
+  }
+  return { best, exploredStates };
 }
 
 function optimizeSevenStarTargets(rawTargets, inventory, options = {}) {
@@ -2767,7 +2770,7 @@ function optimizeSevenStarTargets(rawTargets, inventory, options = {}) {
   const mode = options.mode === 'maximize' ? 'maximize' : 'guarantee';
   const targetBudgetFactor = Math.min(3, Math.max(1, Math.sqrt(Math.max(1, targets.length))));
   const unlimitedBeam = isUnlimitedBeamWidth(beamWidth);
-  const maxMs = options.maxMs || (unlimitedBeam ? 300000 : Math.round((beamWidth >= 300 ? 7500 : 4500) * targetBudgetFactor));
+  const maxMs = options.maxMs || (unlimitedBeam ? 30000 : Math.round(3000 * targetBudgetFactor));
   const baseInventory = cleanWarehouseInventory ? cleanWarehouseInventory(inventory) : cloneInventory(inventory);
   const deadline = startedAt + maxMs;
   const searchStats = createSearchStats();
@@ -2797,11 +2800,13 @@ function optimizeSevenStarTargets(rawTargets, inventory, options = {}) {
     };
   }
 
-  const perTargetMs = Math.max(900, Math.round(maxMs / Math.max(1, targets.length)));
+  const perTargetMs = Math.max(500, Math.round(maxMs / Math.max(1, targets.length)));
+  const requiredCounts = targets.map((target) => normalizeQuantity(target.desiredCount)).filter((count) => count > 0);
   const routePools = targets.map((target) => buildTargetRoutePool(target, baseInventory, {
     beamWidth,
     deadline: Math.min(deadline, performance.now() + perTargetMs),
-    stats: searchStats
+    stats: searchStats,
+    requiredCounts
   }));
   const poolExploredStates = routePools.reduce((sum, pool) => sum + pool.exploredStates, 0);
   const poolTruncated = routePools.some((pool) => pool.truncated);
@@ -3735,7 +3740,7 @@ function runPlanner() {
   els.plannerRun.textContent = '搜索中...';
   const targetCount = enabledTargets.length;
   const width = normalizeBeamWidth(state.optimizerBeamWidth);
-  setPlannerStatus(`正在搜索 ${targetCount} 个七星目标，搜索宽度 ${formatBeamWidth(width)}。不限模式最多运行 5 分钟。`, 'busy');
+  setPlannerStatus(`正在搜索 ${targetCount} 个七星目标，搜索宽度 ${formatBeamWidth(width)}。新引擎通常在毫秒级完成。`, 'busy');
 
   const startSearch = () => {
     try {
@@ -3774,10 +3779,10 @@ function renderPlannerResult() {
     els.plannerMetrics.innerHTML = `
       ${renderMetricCard('规划状态', '等待', '添加七星目标后开始')}
       ${renderMetricCard('优化模式', state.optimizationMode === 'guarantee' ? '期望优先' : '最大数量', '可随时切换')}
-      ${renderMetricCard('搜索宽度', formatBeamWidth(state.optimizerBeamWidth), isUnlimitedBeamWidth(state.optimizerBeamWidth) ? '最多 5 分钟' : '越高越慢')}
+      ${renderMetricCard('搜索宽度', formatBeamWidth(state.optimizerBeamWidth), isUnlimitedBeamWidth(state.optimizerBeamWidth) ? '更多重启变体' : '宽度=重启变体数')}
       ${renderMetricCard('目标数量', `${state.optimizationTargets.filter((target) => target.enabled).length}`, '已启用目标')}
     `;
-    els.plannerSummary.innerHTML = '<div class="approx-note">该规划器使用路线池组合生成近似最优方案；期望数量是精确值，填 1 就只选择正好 1 个。不限定宽度会取消宽度裁剪，但最多运行 5 分钟。</div>';
+    els.plannerSummary.innerHTML = '<div class="approx-note">该规划器使用路线池组合生成近似最优方案；期望数量是精确值，填 1 就只选择正好 1 个。不限定宽度会增加重启变体数量，通常仍在毫秒级完成。</div>';
     els.plannerStages.innerHTML = '<div class="empty-state">这里会显示按阶段整理的七星合成路线。</div>';
     return;
   }
@@ -3799,7 +3804,7 @@ function renderPlannerResult() {
       <div class="summary-grid">
         <section class="summary-cell wide">
           <span class="summary-label">近似最优提示</span>
-          <strong>该方案先完整构建所选目标的配方闭包并集，再在路线池内组合搜索；期望数量按精确值处理，“不限”会取消宽度裁剪，但最多运行 5 分钟。</strong>
+          <strong>该方案先完整构建所选目标的配方闭包并集，再在路线池内组合搜索；期望数量按精确值处理，“不限”会增加重启变体数量，通常仍在毫秒级完成。</strong>
         </section>
         <section class="summary-cell wide">
           <span class="summary-label">本次配方范围</span>
